@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">MathLabs</string>
+
+    <string name="expand_arrow_description">Genişletme veya daraltma oku</string>
+    <string name="splash_text">Codenzi</string>
+
+    <string name="app_title_on_main_screen">MathLabs</string> <string name="course_selection_prompt">Lütfen ders seçiniz:</string>
+    <string name="content_desc_foreground">foreground</string>
+</resources>

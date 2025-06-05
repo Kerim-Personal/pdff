@@ -1,0 +1,20 @@
+<resources>
+
+    <style name="Theme.Pdf" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/my_app_primary</item>
+        <item name="colorOnPrimary">@color/white</item> <item name="colorSurfaceContainerLowest">@color/white</item> <item name="android:statusBarColor" >?attr/colorSurfaceContainerLowest</item>
+        <item name="android:windowLightStatusBar" >true</item>
+    </style>
+
+    <style name="Theme.Pdf.SplashActivity" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="colorPrimary">@color/splash_background_color</item>
+        <item name="colorOnPrimary">@color/white</item>
+    </style>
+
+    <style name="Theme.Pdf.PdfView" parent="Theme.Material3.DayNight">
+        <item name="colorPrimary">@color/my_app_primary</item>
+    </style>
+
+</resources>
