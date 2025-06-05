@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.appbar.MaterialToolbar // Toolbar için import ekleyin
 
 class MainActivity : AppCompatActivity() {
 
@@ -25,10 +26,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Eğer temanızda bir ActionBar (üst çubuk) varsa, başlığı burada ayarlayabilirsiniz.
-        // Artık Manifest'teki android:label değerini veya programatik olarak ayarlanan bir başlığı kullanacaktır.
-        // Örneğin:
-        // supportActionBar?.title = getString(R.string.app_title_on_main_screen)
+        // YENİ EKLENEN KOD
+        // Layout'a eklediğimiz Toolbar'ı bulup aktivitenin action bar'ı olarak ayarlıyoruz.
+        val toolbar: MaterialToolbar = findViewById(R.id.topToolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar?.title = getString(R.string.app_name) // Başlığı buradan ayarlayabilirsiniz
 
         recyclerViewCourses = findViewById(R.id.recyclerViewCourses)
         setupRecyclerView()
@@ -54,6 +56,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // ... (setupRecyclerView ve loadCourses metodlarınız aynı kalacak)
     private fun setupRecyclerView() {
         courseAdapter = CourseAdapter(
             this,
