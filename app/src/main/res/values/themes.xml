@@ -1,20 +1,27 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Theme.Pdf" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/serene_blue_primary</item>
+        <item name="colorOnPrimary">@color/serene_text_light</item>
+        <item name="colorSecondary">@color/serene_teal_accent</item>
+        <item name="colorOnSecondary">@color/serene_text_dark</item>
 
-    <style name="Theme.Pdf" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/my_app_primary</item>
-        <item name="colorOnPrimary">@color/white</item> <item name="colorSurfaceContainerLowest">@color/white</item> <item name="android:statusBarColor" >?attr/colorSurfaceContainerLowest</item>
-        <item name="android:windowLightStatusBar" >true</item>
+        <item name="android:colorBackground">@color/serene_surface_light</item>
+        <item name="colorSurface">@color/serene_surface_light</item>
+        <item name="colorOnSurface">@color/serene_text_dark</item>
+
+        <item name="colorPrimaryContainer">@color/serene_container_light</item>
+        <item name="colorOnPrimaryContainer">@color/serene_text_dark</item>
+        <item name="colorSurfaceVariant">@color/serene_container_light</item>
+        <item name="colorOnSurfaceVariant">@color/serene_text_dark</item>
+
+        <item name="android:statusBarColor">?attr/colorPrimary</item>
     </style>
 
-    <style name="Theme.Pdf.SplashActivity" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="android:windowFullscreen">true</item>
-        <item name="android:windowContentOverlay">@null</item>
-        <item name="colorPrimary">@color/splash_background_color</item>
-        <item name="colorOnPrimary">@color/white</item>
+    <style name="Theme.Pdf.SplashActivity" parent="Theme.Material3.Light.NoActionBar">
+        <item name="android:windowBackground">@color/serene_blue_dark</item>
     </style>
 
-    <style name="Theme.Pdf.PdfView" parent="Theme.Material3.DayNight">
-        <item name="colorPrimary">@color/my_app_primary</item>
+    <style name="Theme.Pdf.PdfView" parent="Theme.Material3.Light">
+        <item name="colorPrimary">@color/serene_blue_primary</item>
     </style>
-
 </resources>

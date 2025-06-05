@@ -17,4 +17,10 @@
     <string name="action_settings">Ayarlar</string>
     <string name="touch_sound">Tuş Sesi</string>
     <string name="haptic_feedback">Dokunsal Geribildirim</string>
+
+    <string name="theme_settings">Görünüm</string>
+    <string name="theme_title">Uygulama Teması</string>
+    <string name="theme_light">Açık</string>
+    <string name="theme_dark">Koyu</string>
+    <string name="theme_system_default">Sistem Varsayılanı</string>
 </resources>

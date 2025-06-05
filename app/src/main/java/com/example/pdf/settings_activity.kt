@@ -1,17 +1,22 @@
 package com.example.pdf
 
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.LinearLayout
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingsActivity : AppCompatActivity() {
 
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(LocaleHelper.onAttach(newBase))
+        // Apply theme before view is created
+        applyTheme()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,36 +26,56 @@ class SettingsActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title = getString(R.string.settings_title)
 
-        // XML'den view'ları bulma
         val layoutLanguageSettings: LinearLayout = findViewById(R.id.layoutLanguageSettings)
-        val switchHapticFeedback: SwitchMaterial = findViewById(R.id.switchHapticFeedback)
+        val layoutThemeSettings: LinearLayout = findViewById(R.id.layoutThemeSettings) // YENİ
 
-        //--- SESLE İLGİLİ KODLAR KALDIRILDI ---
-
-        // Mevcut dokunsal geri bildirim ayarını yükle ve switch'i ayarla
-        switchHapticFeedback.isChecked = SharedPreferencesManager.isHapticFeedbackEnabled(this)
-
-        // Dil ayarları tıklama dinleyicisi
-        layoutLanguageSettings.setOnClickListener {
-            UIFeedbackHelper.provideFeedback(it) // Geri bildirim ekle
-            val intent = Intent(this, LanguageSelectionActivity::class.java)
-            startActivity(intent)
+        layoutThemeSettings.setOnClickListener {
+            showThemeDialog()
         }
 
-        //--- SES SWITCH'İNİN TIKLAMA DİNLEYİCİSİ KALDIRILDI ---
-
-        // Dokunsal geri bildirim switch'i için tıklama dinleyicisi
-        switchHapticFeedback.setOnCheckedChangeListener { buttonView, isChecked ->
-            UIFeedbackHelper.provideFeedback(buttonView) // Geri bildirim ekle
-            SharedPreferencesManager.setHapticFeedbackEnabled(this, isChecked)
-        }
+        // ... diğer click listener'lar ...
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == android.R.id.home) {
-            onBackPressedDispatcher.onBackPressed()
-            return true
+    private fun showThemeDialog() {
+        val themes = arrayOf(
+            getString(R.string.theme_light),
+            getString(R.string.theme_dark),
+            getString(R.string.theme_system_default)
+        )
+
+        val currentTheme = SharedPreferencesManager.getTheme(this)
+        var checkedItem = when (currentTheme) {
+            AppCompatDelegate.MODE_NIGHT_NO -> 0
+            AppCompatDelegate.MODE_NIGHT_YES -> 1
+            else -> 2
         }
-        return super.onOptionsItemSelected(item)
+
+        AlertDialog.Builder(this)
+            .setTitle(getString(R.string.theme_title))
+            .setSingleChoiceItems(themes, checkedItem) { dialog, which ->
+                checkedItem = which
+            }
+            .setPositiveButton("OK") { dialog, _ ->
+                val selectedTheme = when (checkedItem) {
+                    0 -> AppCompatDelegate.MODE_NIGHT_NO
+                    1 -> AppCompatDelegate.MODE_NIGHT_YES
+                    else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                }
+                SharedPreferencesManager.saveTheme(this, selectedTheme)
+                AppCompatDelegate.setDefaultNightMode(selectedTheme)
+                dialog.dismiss()
+            }
+            .setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .create()
+            .show()
     }
+
+    private fun applyTheme() {
+        val theme = SharedPreferencesManager.getTheme(this)
+        AppCompatDelegate.setDefaultNightMode(theme)
+    }
+
+    // ... onOptionsItemSelected ...
 }

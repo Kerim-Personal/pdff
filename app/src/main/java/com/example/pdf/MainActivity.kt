@@ -8,6 +8,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
@@ -20,13 +22,14 @@ class MainActivity : AppCompatActivity() {
 
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(LocaleHelper.onAttach(newBase))
+        // Tema, view oluşturulmadan ÖNCE uygulanmalı
+        applyTheme()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        UIFeedbackHelper.init(this) // Ses ve titreşim için
         setContentView(R.layout.activity_main)
-
-        // UIFeedbackHelper.init() çağrısına artık gerek yok.
 
         val toolbar: MaterialToolbar = findViewById(R.id.topToolbar)
         setSupportActionBar(toolbar)
@@ -37,15 +40,29 @@ class MainActivity : AppCompatActivity() {
         loadCourses()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        UIFeedbackHelper.release() // Ses kaynaklarını serbest bırak
+    }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
+
+        val settingsItem = menu?.findItem(R.id.action_settings)
+        settingsItem?.icon?.let { icon ->
+            val newIcon = icon.mutate()
+            // HATA DÜZELTİLDİ: Doğru renk referansı kullanıldı
+            val accentColor = ContextCompat.getColor(this, R.color.serene_teal_accent)
+            newIcon.setTint(accentColor)
+            settingsItem.icon = newIcon
+        }
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_settings -> {
-                UIFeedbackHelper.provideFeedback(findViewById(R.id.action_settings)) // <-- BU SATIRI EKLE/KONTROL ET
+                UIFeedbackHelper.provideFeedback(findViewById(R.id.action_settings))
                 val intent = Intent(this, SettingsActivity::class.java)
                 startActivity(intent)
                 true
@@ -53,8 +70,6 @@ class MainActivity : AppCompatActivity() {
             else -> super.onOptionsItemSelected(item)
         }
     }
-
-    // onDestroy içinde UIFeedbackHelper.release() çağrısına artık gerek yok.
 
     private fun setupRecyclerView() {
         courseAdapter = CourseAdapter(
@@ -70,17 +85,13 @@ class MainActivity : AppCompatActivity() {
                 startActivity(intent)
             }
         )
-
         recyclerViewCourses.layoutManager = LinearLayoutManager(this)
         recyclerViewCourses.adapter = courseAdapter
     }
 
     @SuppressLint("NotifyDataSetChanged")
     private fun loadCourses() {
-        // Ders listesi içeriği aynı kaldığı için burayı kısa tutuyorum...
-        // Önceki cevaptaki uzun listenin tamamı burada olmalı.
         courseList.clear()
-
         // --- BİLGİSAYAR MÜHENDİSLİĞİ DERSLERİ ---
         courseList.add(
             Course(
@@ -102,7 +113,6 @@ class MainActivity : AppCompatActivity() {
                 )
             )
         )
-
         courseList.add(
             Course(
                 "Kompleks Analiz", listOf(
@@ -118,7 +128,6 @@ class MainActivity : AppCompatActivity() {
                 )
             )
         )
-
         courseList.add(
             Course(
                 "Nümerik Analiz", listOf(
@@ -134,7 +143,6 @@ class MainActivity : AppCompatActivity() {
                 )
             )
         )
-
         courseList.add(
             Course(
                 "Lineer Cebir", listOf(
@@ -152,7 +160,6 @@ class MainActivity : AppCompatActivity() {
                 )
             )
         )
-
         courseList.add(
             Course(
                 "Soyut Matematik", listOf(
@@ -167,7 +174,6 @@ class MainActivity : AppCompatActivity() {
                 )
             )
         )
-
         courseList.add(
             Course(
                 "Cebir", listOf(
@@ -181,7 +187,6 @@ class MainActivity : AppCompatActivity() {
                 )
             )
         )
-
         courseList.add(
             Course(
                 "Sayılar Teorisi", listOf(
@@ -197,7 +202,6 @@ class MainActivity : AppCompatActivity() {
                 )
             )
         )
-
         courseList.add(
             Course(
                 "Diferansiyel Denklemler", listOf(
@@ -213,7 +217,6 @@ class MainActivity : AppCompatActivity() {
                 )
             )
         )
-
         courseList.add(
             Course(
                 "Kısmi Türevli Diferansiyel Denklemler", listOf(
@@ -228,7 +231,6 @@ class MainActivity : AppCompatActivity() {
                 )
             )
         )
-
         courseList.add(
             Course(
                 "Analitik Geometri", listOf(
@@ -242,7 +244,6 @@ class MainActivity : AppCompatActivity() {
                 )
             )
         )
-
         courseList.add(
             Course(
                 "Diferansiyel Geometri", listOf(
@@ -257,7 +258,6 @@ class MainActivity : AppCompatActivity() {
                 )
             )
         )
-
         courseList.add(
             Course(
                 "Topoloji", listOf(
@@ -272,7 +272,6 @@ class MainActivity : AppCompatActivity() {
                 )
             )
         )
-
         courseList.add(
             Course(
                 "Olasılık", listOf(
@@ -288,7 +287,6 @@ class MainActivity : AppCompatActivity() {
                 )
             )
         )
-
         courseList.add(
             Course(
                 "Fonksiyonel Analiz", listOf(
@@ -301,7 +299,12 @@ class MainActivity : AppCompatActivity() {
                 )
             )
         )
-
         courseAdapter.notifyDataSetChanged()
+    }
+
+    // Tema uygulama fonksiyonu
+    private fun applyTheme() {
+        val theme = SharedPreferencesManager.getTheme(this)
+        AppCompatDelegate.setDefaultNightMode(theme)
     }
 }

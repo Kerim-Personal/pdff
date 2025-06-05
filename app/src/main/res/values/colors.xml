@@ -1,4 +1,3 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="my_app_primary">#006493</color> <color name="white">#FFFFFFFF</color>
-    <color name="splash_background_color">#004A70</color> </resources>
+    <color name="serene_blue_primary">#2A78A0</color>    <color name="serene_blue_dark">#1A5A7A</color>     <color name="serene_teal_accent">#68A2A8</color>    <color name="serene_surface_light">#F9F9F9</color> <color name="serene_container_light">#FFFFFF</color> <color name="serene_text_dark">#1A1C1E</color>      <color name="serene_surface_dark">#121212</color>    <color name="serene_container_dark">#1E1E1E</color>   <color name="serene_text_light">#E2E2E6</color>     </resources>

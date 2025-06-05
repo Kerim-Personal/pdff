@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
-    tools:context=".SettingsActivity">
+    tools:context=".SettingsActivity"
+    android:background="?attr/colorSurface">
 
     <TextView
         android:id="@+id/textViewSettingsTitle"
@@ -15,7 +16,49 @@
         android:text="@string/settings_title"
         android:textSize="24sp"
         android:textStyle="bold"
-        android:layout_marginBottom="24dp"/>
+        android:layout_marginBottom="16dp"
+        android:textColor="?attr/colorPrimary" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/theme_settings"
+        android:textColor="?attr/colorSecondary"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:layout_marginTop="16dp"/>
+
+    <LinearLayout
+        android:id="@+id/layoutThemeSettings"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingVertical="12dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center_vertical"
+        android:background="?attr/selectableItemBackground">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/baseline_settings_24"
+            app:tint="?attr/colorOnSurfaceVariant" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/theme_title"
+            android:textSize="18sp"
+            android:textColor="?attr/colorOnSurface"
+            android:layout_marginStart="16dp"/>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider"
+        android:layout_marginBottom="16dp"/>
 
     <LinearLayout
         android:id="@+id/layoutLanguageSettings"
@@ -32,15 +75,14 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/baseline_settings_24"
-            app:tint="?attr/colorOnSurfaceVariant"
-            android:contentDescription="@string/language_settings" />
+            app:tint="?attr/colorOnSurfaceVariant" />
 
         <TextView
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:text="@string/language_settings"
             android:textSize="18sp"
+            android:textColor="?attr/colorOnSurface"
             android:layout_marginStart="16dp"/>
     </LinearLayout>
 
@@ -49,6 +91,14 @@
         android:layout_height="1dp"
         android:background="?android:attr/listDivider"
         android:layout_marginVertical="8dp"/>
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/switchTouchSound"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/touch_sound"
+        android:textSize="18sp"
+        android:paddingVertical="12dp"/>
 
     <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/switchHapticFeedback"
