@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun loadCourses() {
-        // === Analiz ===
+
         courseList.add(
             Course(
                 "Kalkülüs", listOf(
@@ -98,7 +98,6 @@ class MainActivity : AppCompatActivity() {
             )
         )
 
-        // === Cebirsel Yapılar ===
         courseList.add(
             Course(
                 "Lineer Cebir", listOf(
@@ -162,7 +161,6 @@ class MainActivity : AppCompatActivity() {
             )
         )
 
-        // === Diferansiyel Denklemler ===
         courseList.add(
             Course(
                 "Diferansiyel Denklemler", listOf(
@@ -194,7 +192,6 @@ class MainActivity : AppCompatActivity() {
             )
         )
 
-        // === Geometri ve Topoloji ===
         courseList.add(
             Course(
                 "Analitik Geometri", listOf(
@@ -239,7 +236,6 @@ class MainActivity : AppCompatActivity() {
             )
         )
 
-        // === Olasılık ===
         courseList.add(
             Course(
                 "Olasılık", listOf(
@@ -256,7 +252,6 @@ class MainActivity : AppCompatActivity() {
             )
         )
 
-        // === Yeni Ders: Fonksiyonel Analiz ===
         courseList.add(
             Course(
                 "Fonksiyonel Analiz", listOf(
@@ -273,9 +268,4 @@ class MainActivity : AppCompatActivity() {
         courseAdapter.notifyDataSetChanged()
     }
 
-    /*
-    private fun openPdfFromAssets(assetName: String, fileDisplayName: String) {
-        // ... eski kod, artık gerekli değil ...
-    }
-    */
 }
