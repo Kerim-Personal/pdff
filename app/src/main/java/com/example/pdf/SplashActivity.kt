@@ -1,28 +1,35 @@
-package com.example.pdf // Paket adını kontrol et
+package com.example.pdf
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
 
-// R dosyasını import etmeyi unutma (gerekirse)
-// import com.example.pdf.R
-
-@SuppressLint("CustomSplashScreen") // Android 12+ splash API'si için uyarıyı bastırır, şimdilik basit tutuyoruz
+@SuppressLint("CustomSplashScreen")
 class SplashActivity : AppCompatActivity() {
 
-    private val SPLASH_TIMEOUT: Long = 2000 // 2 saniye (milisaniye cinsinden)
+    private val SPLASH_TIMEOUT: Long = 2000 // 2 seconds
+
+    // No need to override attachBaseContext here as Splash does not show localized content
+    // before deciding where to go.
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
 
-        // Belirli bir süre sonra ana aktiviteye geç
         Handler(Looper.getMainLooper()).postDelayed({
-            startActivity(Intent(this, MainActivity::class.java))
-            finish() // SplashActivity'yi kapat, geri dönülmesin
+            if (SharedPreferencesManager.isLanguageSelected(this)) {
+                // Language has been selected before, proceed to MainActivity
+                // MainActivity's attachBaseContext will handle applying the saved locale
+                startActivity(Intent(this, MainActivity::class.java))
+            } else {
+                // First launch or language not selected, go to LanguageSelectionActivity
+                startActivity(Intent(this, LanguageSelectionActivity::class.java))
+            }
+            finish() // Close SplashActivity
         }, SPLASH_TIMEOUT)
     }
 }

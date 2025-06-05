@@ -1,8 +1,9 @@
-package com.example.pdf // Paket adının doğru olduğundan emin ol
+package com.example.pdf
 
+import android.content.Context // Required for attachBaseContext
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.MenuItem // Geri butonu için
+import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
 import android.widget.ProgressBar
@@ -12,8 +13,6 @@ import com.github.barteksc.pdfviewer.listener.OnErrorListener
 import com.github.barteksc.pdfviewer.listener.OnLoadCompleteListener
 import com.github.barteksc.pdfviewer.listener.OnPageErrorListener
 
-// import com.example.pdf.R // R dosyasını import etmeyi unutma
-
 class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorListener, OnPageErrorListener {
 
     private lateinit var pdfView: PDFView
@@ -22,23 +21,24 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
 
     companion object {
         const val EXTRA_PDF_ASSET_NAME = "pdf_asset_name"
-        const val EXTRA_PDF_TITLE = "pdf_title" // Başlık için
+        const val EXTRA_PDF_TITLE = "pdf_title"
+    }
+
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(LocaleHelper.onAttach(newBase))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Ekran görüntüsü alınmasını engelle
         window.setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE)
-
         setContentView(R.layout.activity_pdf_view)
 
-        // Toolbar'a geri butonu ve başlık ekle (isteğe bağlı)
         pdfAssetName = intent.getStringExtra(EXTRA_PDF_ASSET_NAME)
-        val pdfTitle = intent.getStringExtra(EXTRA_PDF_TITLE) ?: "PDF" // Başlık yoksa varsayılan
+        val pdfTitle = intent.getStringExtra(EXTRA_PDF_TITLE) ?: "PDF"
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.title = pdfTitle
+        supportActionBar?.title = pdfTitle // Title will be set based on the activity's locale
 
         pdfView = findViewById(R.id.pdfView)
         progressBar = findViewById(R.id.progressBarPdf)
@@ -47,50 +47,47 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
             displayPdfFromAssets(pdfAssetName!!)
         } else {
             Toast.makeText(this, "PDF dosyası bulunamadı.", Toast.LENGTH_SHORT).show()
-            finish() // Aktiviteyi kapat
+            finish()
         }
     }
+    // ... (rest of your PdfViewActivity code remains the same)
 
     private fun displayPdfFromAssets(assetName: String) {
-        progressBar.visibility = View.VISIBLE // Yükleniyor göstergesini göster
+        progressBar.visibility = View.VISIBLE
         pdfView.fromAsset(assetName)
-            .defaultPage(0) // Başlangıç sayfası
-            .enableSwipe(true) // Sayfalar arası kaydırmayı etkinleştir
-            .swipeHorizontal(false) // Dikey kaydırma
-            .enableAnnotationRendering(false) // Annotasyonları gösterme (temel görüntüleyici için)
-            .onLoad(this) // Yükleme tamamlandığında çağrılacak listener
-            .onError(this) // Hata oluştuğunda çağrılacak listener
-            .onPageError(this) // Sayfa hatası oluştuğunda
-            .enableAntialiasing(true) // Kenar yumuşatma (daha iyi görünüm için)
-            .spacing(10) // Sayfalar arası boşluk (dp cinsinden)
+            .defaultPage(0)
+            .enableSwipe(true)
+            .swipeHorizontal(false)
+            .enableAnnotationRendering(false)
+            .onLoad(this)
+            .onError(this)
+            .onPageError(this)
+            .enableAntialiasing(true)
+            .spacing(10)
             .load()
     }
 
-    // PDF yükleme tamamlandığında
     override fun loadComplete(nbPages: Int) {
-        progressBar.visibility = View.GONE // Yükleniyor göstergesini gizle
+        progressBar.visibility = View.GONE
         Toast.makeText(this, "PDF Yüklendi ($nbPages sayfa)", Toast.LENGTH_SHORT).show()
     }
 
-    // PDF yüklenirken genel bir hata oluşursa
     override fun onError(t: Throwable?) {
         progressBar.visibility = View.GONE
         Toast.makeText(this, "Hata: " + t?.message, Toast.LENGTH_LONG).show()
         t?.printStackTrace()
-        finish() // Hata durumunda aktiviteyi kapatabilirsin
+        finish()
     }
 
-    // Belirli bir sayfa yüklenirken hata oluşursa
     override fun onPageError(page: Int, t: Throwable?) {
         progressBar.visibility = View.GONE
         Toast.makeText(this, "Sayfa yüklenirken hata: $page - " + t?.message, Toast.LENGTH_LONG).show()
         t?.printStackTrace()
     }
 
-    // Toolbar'daki geri butonuna basıldığında
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
-            finish() // Aktiviteyi kapat
+            finish()
             return true
         }
         return super.onOptionsItemSelected(item)

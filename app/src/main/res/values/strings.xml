@@ -1,9 +1,14 @@
 <resources>
     <string name="app_name">MathLabs</string>
-
     <string name="expand_arrow_description">Genişletme veya daraltma oku</string>
     <string name="splash_text">Codenzi</string>
-
-    <string name="app_title_on_main_screen">MathLabs</string> <string name="course_selection_prompt">Lütfen ders seçiniz:</string>
+    <string name="app_title_on_main_screen">MathLabs</string>
+    <string name="course_selection_prompt">Lütfen ders seçiniz:</string>
     <string name="content_desc_foreground">foreground</string>
+
+    <string name="dil_seciniz">Dil seçiniz</string>
+    <string name="language_turkish">Türkçe</string>
+    <string name="language_english">English</string>
+    <string name="desc_turkish_flag">Türk Bayrağı</string>
+    <string name="desc_uk_flag">İngiltere Bayrağı</string>
 </resources>

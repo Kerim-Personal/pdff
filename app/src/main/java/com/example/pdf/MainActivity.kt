@@ -1,6 +1,7 @@
 package com.example.pdf
 
 import android.annotation.SuppressLint
+import android.content.Context // Required for attachBaseContext
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
@@ -14,8 +15,16 @@ class MainActivity : AppCompatActivity() {
     private lateinit var courseAdapter: CourseAdapter
     private val courseList = mutableListOf<Course>()
 
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(LocaleHelper.onAttach(newBase))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Theme related settings or title changes might need to happen after locale is set.
+        // For example, if activity title comes from strings.xml
+        // setTitle(R.string.app_name) // Or your specific title for MainActivity
+
         setContentView(R.layout.activity_main)
 
         recyclerViewCourses = findViewById(R.id.recyclerViewCourses)
@@ -44,6 +53,8 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun loadCourses() {
+        // Your existing loadCourses() method
+        courseList.clear() // Clear list before adding, in case of activity recreation
 
         courseList.add(
             Course(
@@ -267,5 +278,4 @@ class MainActivity : AppCompatActivity() {
 
         courseAdapter.notifyDataSetChanged()
     }
-
 }
