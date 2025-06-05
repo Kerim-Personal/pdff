@@ -1,9 +1,11 @@
 package com.example.pdf
 
 import android.annotation.SuppressLint
-import android.content.Context // Required for attachBaseContext
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,15 +23,35 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Theme related settings or title changes might need to happen after locale is set.
-        // For example, if activity title comes from strings.xml
-        // setTitle(R.string.app_name) // Or your specific title for MainActivity
-
         setContentView(R.layout.activity_main)
+
+        // Eğer temanızda bir ActionBar (üst çubuk) varsa, başlığı burada ayarlayabilirsiniz.
+        // Artık Manifest'teki android:label değerini veya programatik olarak ayarlanan bir başlığı kullanacaktır.
+        // Örneğin:
+        // supportActionBar?.title = getString(R.string.app_title_on_main_screen)
 
         recyclerViewCourses = findViewById(R.id.recyclerViewCourses)
         setupRecyclerView()
         loadCourses()
+    }
+
+    // Menüyü oluşturmak için eklenen yeni metod
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+        return true
+    }
+
+    // Menü öğesi seçimlerini işlemek için eklenen yeni metod
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_settings -> {
+                // SettingsActivity'yi aç
+                val intent = Intent(this, SettingsActivity::class.java)
+                startActivity(intent)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     private fun setupRecyclerView() {
@@ -53,8 +75,8 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun loadCourses() {
-        // Your existing loadCourses() method
-        courseList.clear() // Clear list before adding, in case of activity recreation
+        // Mevcut loadCourses() metodunuz
+        courseList.clear()
 
         courseList.add(
             Course(

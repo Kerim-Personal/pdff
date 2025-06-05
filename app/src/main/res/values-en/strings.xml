@@ -2,4 +2,8 @@
     <string name="dil_seciniz">Select Language</string>
     <string name="language_turkish">Türkçe</string>
     <string name="language_english">English</string>
+
+    <string name="settings_title">Settings</string>
+    <string name="language_settings">Language Settings</string>
+    <string name="action_settings">Settings</string>
 </resources>

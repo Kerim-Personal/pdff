@@ -11,4 +11,9 @@
     <string name="language_english">English</string>
     <string name="desc_turkish_flag">Türk Bayrağı</string>
     <string name="desc_uk_flag">İngiltere Bayrağı</string>
+
+    <string name="settings_title">Ayarlar</string>
+    <string name="language_settings">Dil Ayarları</string>
+    <string name="action_settings">Ayarlar</string>
+
 </resources>
