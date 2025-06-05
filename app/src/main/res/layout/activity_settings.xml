@@ -25,21 +25,23 @@
         android:paddingVertical="12dp"
         android:clickable="true"
         android:focusable="true"
+        android:gravity="center_vertical"
         android:background="?attr/selectableItemBackground">
 
         <ImageView
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:contentDescription="TODO"
             android:src="@drawable/baseline_settings_24"
-            tools:ignore="ContentDescription,HardcodedText" /> <TextView
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="@string/language_settings"
-        android:textSize="18sp"
-        android:layout_marginStart="16dp"/>
+            app:tint="?attr/colorOnSurfaceVariant"
+            android:contentDescription="@string/language_settings" />
 
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/language_settings"
+            android:textSize="18sp"
+            android:layout_marginStart="16dp"/>
     </LinearLayout>
 
     <View
@@ -48,30 +50,12 @@
         android:background="?android:attr/listDivider"
         android:layout_marginVertical="8dp"/>
 
-    <TextView
-        android:id="@+id/textViewSoundSettings"
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/switchHapticFeedback"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Tuş Sesi (Yakında)"
+        android:text="@string/haptic_feedback"
         android:textSize="18sp"
-        android:paddingVertical="12dp"
-        android:textColor="?android:attr/textColorSecondary"
-        tools:ignore="HardcodedText" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="?android:attr/listDivider"
-        android:layout_marginVertical="8dp"/>
-
-    <TextView
-        android:id="@+id/textViewHapticFeedback"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Dokunsal Geribildirim (Yakında)"
-        android:textSize="18sp"
-        android:paddingVertical="12dp"
-        android:textColor="?android:attr/textColorSecondary"
-        tools:ignore="HardcodedText" />
+        android:paddingVertical="12dp"/>
 
 </LinearLayout>

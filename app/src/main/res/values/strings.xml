@@ -15,5 +15,6 @@
     <string name="settings_title">Ayarlar</string>
     <string name="language_settings">Dil Ayarları</string>
     <string name="action_settings">Ayarlar</string>
-
+    <string name="touch_sound">Tuş Sesi</string>
+    <string name="haptic_feedback">Dokunsal Geribildirim</string>
 </resources>

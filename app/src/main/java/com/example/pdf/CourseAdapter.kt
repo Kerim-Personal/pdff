@@ -1,4 +1,4 @@
-package com.example.pdf // Paket adını kendi projenle değiştir (örn: com.example.pdf)
+package com.example.pdf
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -8,11 +8,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import java.text.Normalizer // Karakter normalizasyonu için eklendi
-
-// R ve Course sınıflarının doğru paketten import edildiğinden emin ol.
-// import com.example.pdf.R // Kendi paket adınla
-// import com.example.pdf.Course // Kendi paket adınla
+import java.text.Normalizer
 
 class CourseAdapter(
     private val context: Context,
@@ -29,6 +25,11 @@ class CourseAdapter(
 
         init {
             courseHeaderLayout.setOnClickListener {
+                // --- YENİ EKLENEN SATIR ---
+                // Tıklandığında ses ve titreşim geri bildirimi verilir.
+                UIFeedbackHelper.provideFeedback(it)
+                // -------------------------
+
                 val position = bindingAdapterPosition
                 if (position != RecyclerView.NO_POSITION) {
                     val course = courses[position]
@@ -39,16 +40,12 @@ class CourseAdapter(
         }
     }
 
-    // Türkçe karakterleri İngilizce benzerlerine çeviren ve formatlayan yardımcı fonksiyon
     private fun normalizeAndFormatForAssetName(input: String): String {
-        // Önce Normalizer ile aksanları ayır (örn: "ğ" -> "g" + aksan)
         var normalized = Normalizer.normalize(input, Normalizer.Form.NFD)
-        // Aksan işaretlerini kaldır
         normalized = normalized.replace("\\p{InCombiningDiacriticalMarks}+".toRegex(), "")
-        // Bilinen Türkçe karakterleri İngilizce benzerlerine çevir
         normalized = normalized
             .replace("ı", "i")
-            .replace("İ", "I") // Büyük İ'yi de büyük I yapalım, lowercase sonra halleder
+            .replace("İ", "I")
             .replace("ğ", "g")
             .replace("Ğ", "G")
             .replace("ü", "u")
@@ -59,7 +56,6 @@ class CourseAdapter(
             .replace("Ö", "O")
             .replace("ç", "c")
             .replace("Ç", "C")
-        // Son olarak küçük harfe çevir ve boşlukları alt çizgi yap
         return normalized.lowercase().replace(" ", "_")
     }
 
@@ -85,23 +81,27 @@ class CourseAdapter(
                 val pdfIconImageView: ImageView = topicView.findViewById(R.id.imageViewPdfIcon)
                 topicTextView.text = topicTitle
 
-                // Güncellenmiş PDF dosya adını oluşturma mantığı
                 val courseTitleForAsset = normalizeAndFormatForAssetName(course.title)
                 val topicTitleForAsset = normalizeAndFormatForAssetName(topicTitle)
                 val pdfAssetName = "${courseTitleForAsset}_${topicTitleForAsset}.pdf"
 
-                // Loglama (Hata ayıklama için çok faydalı)
                 val fileActuallyExists = assetExists(pdfAssetName)
                 android.util.Log.d("PdfAssetCheck", "Ders: '${course.title}', Konu: '${topicTitle}' -> Aranan PDF: '$pdfAssetName', Bulundu mu?: $fileActuallyExists")
 
                 if (fileActuallyExists) {
                     pdfIconImageView.visibility = View.VISIBLE
                     topicView.setOnClickListener {
+                        // --- YENİ EKLENEN SATIR ---
+                        UIFeedbackHelper.provideFeedback(it)
+                        // -------------------------
                         onPdfClickListener(course.title, topicTitle, pdfAssetName)
                     }
                 } else {
                     pdfIconImageView.visibility = View.GONE
                     topicView.setOnClickListener {
+                        // --- YENİ EKLENEN SATIR ---
+                        UIFeedbackHelper.provideFeedback(it)
+                        // -------------------------
                         onTopicClickListener(course.title, topicTitle)
                     }
                 }

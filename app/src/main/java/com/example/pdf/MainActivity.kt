@@ -10,7 +10,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.appbar.MaterialToolbar // Toolbar için import ekleyin
+import com.google.android.material.appbar.MaterialToolbar
 
 class MainActivity : AppCompatActivity() {
 
@@ -26,28 +26,26 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // YENİ EKLENEN KOD
-        // Layout'a eklediğimiz Toolbar'ı bulup aktivitenin action bar'ı olarak ayarlıyoruz.
+        // UIFeedbackHelper.init() çağrısına artık gerek yok.
+
         val toolbar: MaterialToolbar = findViewById(R.id.topToolbar)
         setSupportActionBar(toolbar)
-        supportActionBar?.title = getString(R.string.app_name) // Başlığı buradan ayarlayabilirsiniz
+        supportActionBar?.title = getString(R.string.app_name)
 
         recyclerViewCourses = findViewById(R.id.recyclerViewCourses)
         setupRecyclerView()
         loadCourses()
     }
 
-    // Menüyü oluşturmak için eklenen yeni metod
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
         return true
     }
 
-    // Menü öğesi seçimlerini işlemek için eklenen yeni metod
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_settings -> {
-                // SettingsActivity'yi aç
+                UIFeedbackHelper.provideFeedback(findViewById(R.id.action_settings)) // <-- BU SATIRI EKLE/KONTROL ET
                 val intent = Intent(this, SettingsActivity::class.java)
                 startActivity(intent)
                 true
@@ -56,7 +54,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // ... (setupRecyclerView ve loadCourses metodlarınız aynı kalacak)
+    // onDestroy içinde UIFeedbackHelper.release() çağrısına artık gerek yok.
+
     private fun setupRecyclerView() {
         courseAdapter = CourseAdapter(
             this,
@@ -78,9 +77,11 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun loadCourses() {
-        // Mevcut loadCourses() metodunuz
+        // Ders listesi içeriği aynı kaldığı için burayı kısa tutuyorum...
+        // Önceki cevaptaki uzun listenin tamamı burada olmalı.
         courseList.clear()
 
+        // --- BİLGİSAYAR MÜHENDİSLİĞİ DERSLERİ ---
         courseList.add(
             Course(
                 "Kalkülüs", listOf(

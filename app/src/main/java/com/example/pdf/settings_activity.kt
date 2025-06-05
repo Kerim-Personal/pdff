@@ -1,46 +1,54 @@
-package com.example.pdf // Paket adınızı kontrol edin
+package com.example.pdf
 
-import android.content.Context // attachBaseContext için eklendi
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
-import android.view.MenuItem // MenuItem için eklendi
-import android.widget.LinearLayout // LinearLayout için eklendi
-import android.content.Intent // Intent için eklendi
-import android.widget.Toast // Toast için eklendi
-
+import android.view.MenuItem
+import android.widget.LinearLayout
+import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingsActivity : AppCompatActivity() {
 
     override fun attachBaseContext(newBase: Context) {
-        super.attachBaseContext(LocaleHelper.onAttach(newBase)) // Dil ayarlarını uygula
+        super.attachBaseContext(LocaleHelper.onAttach(newBase))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
-        // ActionBar'ı ayarla
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.title = getString(R.string.settings_title) // Başlığı strings.xml'den al
+        supportActionBar?.title = getString(R.string.settings_title)
 
+        // XML'den view'ları bulma
         val layoutLanguageSettings: LinearLayout = findViewById(R.id.layoutLanguageSettings)
+        val switchHapticFeedback: SwitchMaterial = findViewById(R.id.switchHapticFeedback)
+
+        //--- SESLE İLGİLİ KODLAR KALDIRILDI ---
+
+        // Mevcut dokunsal geri bildirim ayarını yükle ve switch'i ayarla
+        switchHapticFeedback.isChecked = SharedPreferencesManager.isHapticFeedbackEnabled(this)
+
+        // Dil ayarları tıklama dinleyicisi
         layoutLanguageSettings.setOnClickListener {
-            // TODO: Dil seçimi için LanguageSelectionActivity'yi yeniden kullanabilir veya yeni bir dialog gösterebiliriz.
-            // Şimdilik LanguageSelectionActivity'ye gidelim.
+            UIFeedbackHelper.provideFeedback(it) // Geri bildirim ekle
             val intent = Intent(this, LanguageSelectionActivity::class.java)
-            // LanguageSelectionActivity'den sonra MainActivity'ye değil, SettingsActivity'ye geri dönmesini sağlayabiliriz.
-            // Veya LanguageSelectionActivity'nin her zaman MainActivity'ye yönlendirmesini kabul edebiliriz.
-            // Şimdilik basit tutalım, mevcut davranışı koruyalım.
             startActivity(intent)
-            // Eğer dil değişikliği sonrası SettingsActivity'nin de güncellenmesi gerekiyorsa,
-            // LanguageSelectionActivity'den bir sonuç bekleyip recreate() çağrılabilir.
+        }
+
+        //--- SES SWITCH'İNİN TIKLAMA DİNLEYİCİSİ KALDIRILDI ---
+
+        // Dokunsal geri bildirim switch'i için tıklama dinleyicisi
+        switchHapticFeedback.setOnCheckedChangeListener { buttonView, isChecked ->
+            UIFeedbackHelper.provideFeedback(buttonView) // Geri bildirim ekle
+            SharedPreferencesManager.setHapticFeedbackEnabled(this, isChecked)
         }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // ActionBar'daki geri tuşuna basıldığında
         if (item.itemId == android.R.id.home) {
-            onBackPressedDispatcher.onBackPressed() // Aktiviteyi sonlandır ve bir önceki aktiviteye dön
+            onBackPressedDispatcher.onBackPressed()
             return true
         }
         return super.onOptionsItemSelected(item)
