@@ -2,10 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.pdf">
 
-    <!-- Mevcut titreşim izni -->
     <uses-permission android:name="android.permission.VIBRATE" />
 
-    <!-- YENİ: İNTERNET İZNİNİ EKLEYİN -->
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application

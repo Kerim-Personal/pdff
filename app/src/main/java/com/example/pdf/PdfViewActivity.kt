@@ -23,7 +23,7 @@ import com.github.barteksc.pdfviewer.listener.OnLoadCompleteListener
 import com.github.barteksc.pdfviewer.listener.OnPageErrorListener
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar // Import Snackbar
+import com.google.android.material.snackbar.Snackbar
 import com.tom_roush.pdfbox.android.PDFBoxResourceLoader
 import com.tom_roush.pdfbox.pdmodel.PDDocument
 import com.tom_roush.pdfbox.text.PDFTextStripper
@@ -34,9 +34,13 @@ import kotlinx.coroutines.withContext
 import android.content.res.ColorStateList
 import androidx.core.graphics.toColorInt
 import android.graphics.Color
-import android.os.Handler
-import android.os.Looper
-import androidx.constraintlayout.widget.ConstraintLayout // Import ConstraintLayout
+// import android.os.Handler // Unused import directive - Kaldırıldı
+// import android.os.Looper // Unused import directive - Kaldırıldı
+import androidx.constraintlayout.widget.ConstraintLayout
+import com.google.android.material.appbar.MaterialToolbar
+import java.io.IOException
+import java.io.FileNotFoundException
+
 
 class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorListener, OnPageErrorListener {
 
@@ -45,16 +49,17 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
     private lateinit var fabAiChat: FloatingActionButton
     private lateinit var fabReadingMode: FloatingActionButton
     private lateinit var eyeComfortOverlay: View
-    private lateinit var rootLayout: ConstraintLayout // Reference to the root ConstraintLayout
+    private lateinit var rootLayout: ConstraintLayout
+    private lateinit var pdfToolbar: MaterialToolbar
 
     // Drawing related views and state
     private lateinit var drawingView: DrawingView
     private lateinit var fabToggleDrawing: FloatingActionButton
     private lateinit var fabEraser: FloatingActionButton
-    private lateinit var drawingOptionsPanel: LinearLayout // Drawing options panel
+    private lateinit var drawingOptionsPanel: LinearLayout
     private lateinit var colorOptions: LinearLayout
     private lateinit var sizeOptions: LinearLayout
-    private lateinit var clearAllButtonContainer: LinearLayout // Container for the clear all button
+    private lateinit var clearAllButtonContainer: LinearLayout
 
     private lateinit var btnColorRed: ImageButton
     private lateinit var btnColorBlue: ImageButton
@@ -64,17 +69,17 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
     private lateinit var btnSizeMedium: ImageButton
     private lateinit var btnSizeLarge: ImageButton
 
-    private lateinit var fabClearAll: FloatingActionButton // Clear all button
+    private lateinit var fabClearAll: FloatingActionButton
 
-    private var isDrawingActive: Boolean = false // Track if drawing mode is active (pencil or eraser)
-    private var currentPenColor: Int = Color.RED // Default pen color
-    private var currentPenSize: Float = 10f // Default pen size
-    private var currentEraserSize: Float = 50f // Default eraser size
+    private var isDrawingActive: Boolean = false
+    private var currentPenColor: Int = Color.RED
+    private var currentPenSize: Float = 10f
+    private var currentEraserSize: Float = 50f
 
     private var pdfAssetName: String? = null
     private var fullPdfText: String? = null
 
-    private var currentReadingModeLevel: Int = 0 // 0: off, 1: low, 2: medium, 3: high
+    private var currentReadingModeLevel: Int = 0
 
     private val generativeModel by lazy {
         val apiKey = BuildConfig.GEMINI_API_KEY
@@ -99,15 +104,19 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        UIFeedbackHelper.init(this)
         window.setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE)
         setContentView(R.layout.activity_pdf_view)
 
-        rootLayout = findViewById(R.id.root_layout_pdf_view) // Initialize rootLayout
+        rootLayout = findViewById(R.id.root_layout_pdf_view)
+        pdfToolbar = findViewById(R.id.pdfToolbar)
+
+        setSupportActionBar(pdfToolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         pdfAssetName = intent.getStringExtra(EXTRA_PDF_ASSET_NAME)
         val pdfTitle = intent.getStringExtra(EXTRA_PDF_TITLE) ?: getString(R.string.app_name)
 
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title = pdfTitle
 
         pdfView = findViewById(R.id.pdfView)
@@ -116,7 +125,6 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
         fabReadingMode = findViewById(R.id.fab_reading_mode)
         eyeComfortOverlay = findViewById(R.id.eyeComfortOverlay)
 
-        // Initialize drawing views
         drawingView = findViewById(R.id.drawingView)
         fabToggleDrawing = findViewById(R.id.fab_toggle_drawing)
         fabEraser = findViewById(R.id.fab_eraser)
@@ -161,7 +169,6 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
             UIFeedbackHelper.provideFeedback(it)
         }
 
-        // Set up drawing control listeners
         fabToggleDrawing.setOnClickListener {
             UIFeedbackHelper.provideFeedback(it)
             toggleDrawingMode()
@@ -172,7 +179,6 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
             activateEraserMode()
         }
 
-        // Set up new Clear All button listener
         fabClearAll.setOnClickListener {
             UIFeedbackHelper.provideFeedback(it)
             drawingView.clearDrawing()
@@ -180,91 +186,83 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
         }
 
 
-        // Initially hide drawing overlay and set drawing mode to NONE
         drawingView.drawingMode = DrawingView.DrawingMode.NONE
-        setDrawingButtonState(false) // Initially show pencil as inactive
+        setDrawingButtonState(false)
 
-        // Setup initial selected states and listeners for drawing options
         setupDrawingOptions()
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        UIFeedbackHelper.release()
     }
 
     private fun setupDrawingOptions() {
-        // Load saved preferences or use defaults for initial color and size
         currentPenColor = SharedPreferencesManager.getPenColor(this)
         currentPenSize = when (SharedPreferencesManager.getPenSizeType(this)) {
             DrawingModeType.SMALL.ordinal -> 5f
             DrawingModeType.MEDIUM.ordinal -> 10f
             DrawingModeType.LARGE.ordinal -> 20f
-            else -> 10f // Default to medium
+            else -> 10f
         }
         currentEraserSize = when (SharedPreferencesManager.getEraserSizeType(this)) {
-            DrawingModeType.SMALL.ordinal -> 25f // Smaller eraser size
-            DrawingModeType.MEDIUM.ordinal -> 50f // Medium eraser size (default)
-            DrawingModeType.LARGE.ordinal -> 75f // Larger eraser size
-            else -> 50f // Default to medium
+            DrawingModeType.SMALL.ordinal -> 25f
+            DrawingModeType.MEDIUM.ordinal -> 50f
+            DrawingModeType.LARGE.ordinal -> 75f
+            else -> 50f
         }
 
-        // Set initial actual brush color/size based on loaded preferences
         drawingView.setBrushColor(currentPenColor)
-        //drawingView.setBrushSize(currentPenSize) // Only set when tool is active
 
-        // Initialize default selected states for pen color UI
         when (currentPenColor) {
             ContextCompat.getColor(this, R.color.red) -> updateColorSelection(btnColorRed)
             ContextCompat.getColor(this, R.color.blue) -> updateColorSelection(btnColorBlue)
             ContextCompat.getColor(this, R.color.black) -> updateColorSelection(btnColorBlack)
-            else -> updateColorSelection(btnColorRed) // Default to red if saved color is unknown
+            else -> updateColorSelection(btnColorRed)
         }
 
-        // Initialize default selected states for size UI (initially based on pen size)
         when (SharedPreferencesManager.getPenSizeType(this)) {
             DrawingModeType.SMALL.ordinal -> updateSizeSelection(btnSizeSmall)
             DrawingModeType.MEDIUM.ordinal -> updateSizeSelection(btnSizeMedium)
             DrawingModeType.LARGE.ordinal -> updateSizeSelection(btnSizeLarge)
-            else -> updateSizeSelection(btnSizeMedium) // Default to medium
+            else -> updateSizeSelection(btnSizeMedium)
         }
 
-        // Color listeners
         btnColorRed.setOnClickListener {
             UIFeedbackHelper.provideFeedback(it)
             currentPenColor = ContextCompat.getColor(this, R.color.red)
             drawingView.setBrushColor(currentPenColor)
-            SharedPreferencesManager.savePenColor(this, currentPenColor) // Save selected color
+            SharedPreferencesManager.savePenColor(this, currentPenColor)
             updateColorSelection(it)
         }
         btnColorBlue.setOnClickListener {
             UIFeedbackHelper.provideFeedback(it)
             currentPenColor = ContextCompat.getColor(this, R.color.blue)
             drawingView.setBrushColor(currentPenColor)
-            SharedPreferencesManager.savePenColor(this, currentPenColor) // Save selected color
+            SharedPreferencesManager.savePenColor(this, currentPenColor)
             updateColorSelection(it)
         }
         btnColorBlack.setOnClickListener {
             UIFeedbackHelper.provideFeedback(it)
             currentPenColor = ContextCompat.getColor(this, R.color.black)
             drawingView.setBrushColor(currentPenColor)
-            SharedPreferencesManager.savePenColor(this, currentPenColor) // Save selected color
+            SharedPreferencesManager.savePenColor(this, currentPenColor)
             updateColorSelection(it)
         }
 
-        // Size listeners
         btnSizeSmall.setOnClickListener {
             UIFeedbackHelper.provideFeedback(it)
-            setBrushOrEraserSize(5f, DrawingModeType.SMALL) // Small size for pen
+            setBrushOrEraserSize(5f, DrawingModeType.SMALL)
             updateSizeSelection(it)
         }
         btnSizeMedium.setOnClickListener {
             UIFeedbackHelper.provideFeedback(it)
-            setBrushOrEraserSize(10f, DrawingModeType.MEDIUM) // Medium size for pen
+            setBrushOrEraserSize(10f, DrawingModeType.MEDIUM)
             updateSizeSelection(it)
         }
         btnSizeLarge.setOnClickListener {
             UIFeedbackHelper.provideFeedback(it)
-            setBrushOrEraserSize(20f, DrawingModeType.LARGE) // Large size for pen
+            setBrushOrEraserSize(20f, DrawingModeType.LARGE)
             updateSizeSelection(it)
         }
     }
@@ -273,29 +271,25 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
         if (drawingView.drawingMode == DrawingView.DrawingMode.PEN) {
             currentPenSize = size
             drawingView.setBrushSize(currentPenSize)
-            SharedPreferencesManager.savePenSizeType(this, type.ordinal) // Save pen size type
+            SharedPreferencesManager.savePenSizeType(this, type.ordinal)
         } else if (drawingView.drawingMode == DrawingView.DrawingMode.ERASER) {
             currentEraserSize = size
-            drawingView.setBrushSize(currentEraserSize) // DrawingView uses setBrushSize for eraser width too
-            SharedPreferencesManager.saveEraserSizeType(this, type.ordinal) // Save eraser size type
+            drawingView.setBrushSize(currentEraserSize)
+            SharedPreferencesManager.saveEraserSizeType(this, type.ordinal)
         }
     }
 
     private fun updateColorSelection(selectedView: View) {
-        // Deselect all color buttons
         btnColorRed.isSelected = false
         btnColorBlue.isSelected = false
         btnColorBlack.isSelected = false
-        // Select the chosen one
         selectedView.isSelected = true
     }
 
     private fun updateSizeSelection(selectedView: View) {
-        // Deselect all size buttons
         btnSizeSmall.isSelected = false
         btnSizeMedium.isSelected = false
         btnSizeLarge.isSelected = false
-        // Select the chosen one
         selectedView.isSelected = true
     }
 
@@ -306,22 +300,22 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
 
     private fun applyReadingModeFilter(level: Int) {
         when (level) {
-            0 -> { // Off
+            0 -> {
                 eyeComfortOverlay.visibility = View.GONE
                 eyeComfortOverlay.setBackgroundColor(Color.TRANSPARENT)
                 showSnackbar(getString(R.string.reading_mode_off_toast))
             }
-            1 -> { // Low filter (e.g., light sepia/yellow tint)
+            1 -> {
                 eyeComfortOverlay.visibility = View.VISIBLE
                 eyeComfortOverlay.setBackgroundColor("#33FDF6E3".toColorInt())
                 showSnackbar(getString(R.string.reading_mode_low_toast))
             }
-            2 -> { // Medium filter
+            2 -> {
                 eyeComfortOverlay.visibility = View.VISIBLE
                 eyeComfortOverlay.setBackgroundColor("#66FDF6E3".toColorInt())
                 showSnackbar(getString(R.string.reading_mode_medium_toast))
             }
-            3 -> { // High filter
+            3 -> {
                 eyeComfortOverlay.visibility = View.VISIBLE
                 eyeComfortOverlay.setBackgroundColor("#99FDF6E3".toColorInt())
                 showSnackbar(getString(R.string.reading_mode_high_toast))
@@ -331,38 +325,34 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
 
     private fun toggleDrawingMode() {
         if (isDrawingActive && drawingView.drawingMode == DrawingView.DrawingMode.PEN) {
-            // If pen is already active, turn off drawing and hide panel
             drawingView.drawingMode = DrawingView.DrawingMode.NONE
             isDrawingActive = false
             drawingOptionsPanel.visibility = View.GONE
-            clearAllButtonContainer.visibility = View.GONE // Hide clear all button
+            clearAllButtonContainer.visibility = View.GONE
             showSnackbar(getString(R.string.drawing_mode_off_toast))
         } else {
-            // Activate pen mode and show options panel
             drawingView.drawingMode = DrawingView.DrawingMode.PEN
             isDrawingActive = true
-            drawingView.setBrushColor(currentPenColor) // Set stored pen color
-            drawingView.setBrushSize(currentPenSize) // Set stored pen size
+            drawingView.setBrushColor(currentPenColor)
+            drawingView.setBrushSize(currentPenSize)
             drawingOptionsPanel.visibility = View.VISIBLE
-            colorOptions.visibility = View.VISIBLE // Show color options for pen
-            sizeOptions.visibility = View.VISIBLE // Show size options for pen
-            clearAllButtonContainer.visibility = View.VISIBLE // Show clear all button
+            colorOptions.visibility = View.VISIBLE
+            sizeOptions.visibility = View.VISIBLE
+            clearAllButtonContainer.visibility = View.VISIBLE
 
-            // Restore previously selected pen size UI
             when (SharedPreferencesManager.getPenSizeType(this)) {
                 DrawingModeType.SMALL.ordinal -> updateSizeSelection(btnSizeSmall)
                 DrawingModeType.MEDIUM.ordinal -> updateSizeSelection(btnSizeMedium)
                 DrawingModeType.LARGE.ordinal -> updateSizeSelection(btnSizeLarge)
-                else -> updateSizeSelection(btnSizeMedium) // Default to medium
+                else -> updateSizeSelection(btnSizeMedium)
             }
 
-            // Restore previously selected color UI
             val savedColor = SharedPreferencesManager.getPenColor(this)
             when (savedColor) {
                 ContextCompat.getColor(this, R.color.red) -> updateColorSelection(btnColorRed)
                 ContextCompat.getColor(this, R.color.blue) -> updateColorSelection(btnColorBlue)
                 ContextCompat.getColor(this, R.color.black) -> updateColorSelection(btnColorBlack)
-                else -> updateColorSelection(btnColorRed) // Default if no color saved
+                else -> updateColorSelection(btnColorRed)
             }
 
             showSnackbar(getString(R.string.drawing_mode_pencil_toast))
@@ -372,41 +362,36 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
 
     private fun activateEraserMode() {
         if (isDrawingActive && drawingView.drawingMode == DrawingView.DrawingMode.ERASER) {
-            // If eraser is already active, turn off drawing and hide panel
             drawingView.drawingMode = DrawingView.DrawingMode.NONE
             isDrawingActive = false
             drawingOptionsPanel.visibility = View.GONE
-            clearAllButtonContainer.visibility = View.GONE // Hide clear all button
+            clearAllButtonContainer.visibility = View.GONE
             showSnackbar(getString(R.string.drawing_mode_off_toast))
         } else {
-            // Activate eraser mode and show options panel
             drawingView.drawingMode = DrawingView.DrawingMode.ERASER
             isDrawingActive = true
-            drawingView.setBrushSize(currentEraserSize) // Set stored eraser size
+            drawingView.setBrushSize(currentEraserSize)
             drawingOptionsPanel.visibility = View.VISIBLE
-            colorOptions.visibility = View.GONE // Hide color options for eraser
-            sizeOptions.visibility = View.VISIBLE // Show size options for eraser
-            clearAllButtonContainer.visibility = View.VISIBLE // Show clear all button
+            colorOptions.visibility = View.GONE
+            sizeOptions.visibility = View.VISIBLE
+            clearAllButtonContainer.visibility = View.VISIBLE
 
-            // Restore previously selected eraser size UI
             when (SharedPreferencesManager.getEraserSizeType(this)) {
                 DrawingModeType.SMALL.ordinal -> updateSizeSelection(btnSizeSmall)
                 DrawingModeType.MEDIUM.ordinal -> updateSizeSelection(btnSizeMedium)
                 DrawingModeType.LARGE.ordinal -> updateSizeSelection(btnSizeLarge)
-                else -> updateSizeSelection(btnSizeMedium) // Default to medium
+                else -> updateSizeSelection(btnSizeMedium)
             }
             showSnackbar(getString(R.string.drawing_mode_eraser_toast))
         }
         setDrawingButtonState(isDrawingActive)
     }
 
-    // Helper function to update the visual state of the drawing buttons
     private fun setDrawingButtonState(active: Boolean) {
         val activeColor = ContextCompat.getColorStateList(this, R.color.serene_text_light)
         val inactiveColor = ContextCompat.getColorStateList(this, R.color.serene_teal_accent)
 
         if (active) {
-            // Highlight the active tool, dim the inactive one
             if (drawingView.drawingMode == DrawingView.DrawingMode.PEN) {
                 fabToggleDrawing.imageTintList = activeColor
                 fabEraser.imageTintList = inactiveColor
@@ -415,7 +400,6 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
                 fabEraser.imageTintList = activeColor
             }
         } else {
-            // Dim both when no drawing tool is active
             fabToggleDrawing.imageTintList = inactiveColor
             fabEraser.imageTintList = inactiveColor
         }
@@ -432,9 +416,20 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
                 .onError(this)
                 .onPageError(this)
                 .load()
-        } catch (e: Exception) {
+        } catch (e: FileNotFoundException) {
             progressBar.visibility = View.GONE
-            Log.e("PdfViewError", "PDF yüklenirken hata: ${e.localizedMessage}")
+            Log.e("PdfViewError", "PDF dosyası bulunamadı: $assetName - ${e.localizedMessage}")
+            showSnackbar(getString(R.string.pdf_not_found))
+            finish()
+        } catch (e: IOException) {
+            progressBar.visibility = View.GONE
+            Log.e("PdfViewError", "PDF okuma/yükleme hatası: $assetName - ${e.localizedMessage}")
+            showSnackbar(getString(R.string.pdf_load_failed_with_error, e.localizedMessage ?: "Dosya okuma hatası"))
+            finish()
+        }
+        catch (e: Exception) {
+            progressBar.visibility = View.GONE
+            Log.e("PdfViewError", "PDF yüklenirken genel hata: ${e.localizedMessage}", e)
             showSnackbar(getString(R.string.pdf_load_failed_with_error, e.localizedMessage ?: "Bilinmeyen hata"))
             finish()
         }
@@ -496,11 +491,12 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
         dialog.show()
     }
 
-    @Suppress("unused") // Suppress if this warning persists and you know it's used
+    @Suppress("unused")
     private fun extractTextFromPdf(assetName: String) {
         lifecycleScope.launch(Dispatchers.IO) {
             try {
                 PDFBoxResourceLoader.init(applicationContext)
+
                 assets.open(assetName).use { inputStream ->
                     PDDocument.load(inputStream).use { document ->
                         val stripper = PDFTextStripper()
@@ -519,10 +515,20 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
                         }
                     }
                 }
+            } catch (e: FileNotFoundException) {
+                withContext(Dispatchers.Main) {
+                    showSnackbar(getString(R.string.pdf_not_found))
+                    Log.e("PdfTextExtraction", "Metin çıkarılırken dosya bulunamadı: $assetName", e)
+                }
+            } catch (e: IOException) {
+                withContext(Dispatchers.Main) {
+                    showSnackbar(getString(R.string.pdf_text_extraction_failed, e.localizedMessage ?: "Dosya okuma hatası"))
+                    Log.e("PdfTextExtraction", "Metin çıkarılırken IO hatası: $assetName", e)
+                }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     showSnackbar(getString(R.string.pdf_text_extraction_failed, e.localizedMessage ?: "Bilinmeyen hata"))
-                    Log.e("PdfTextExtraction", "Hata: ", e)
+                    Log.e("PdfTextExtraction", "Metin çıkarılırken genel hata: ${e.localizedMessage}", e)
                 }
             }
         }
@@ -531,7 +537,6 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
     override fun loadComplete(nbPages: Int) {
         progressBar.visibility = View.GONE
         showSnackbar(getString(R.string.pdf_loaded_toast, nbPages))
-        // Extract text after PDF loads to enable AI chat
         pdfAssetName?.let {
             if (fullPdfText == null) {
                 extractTextFromPdf(it)
@@ -559,16 +564,11 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
         return super.onOptionsItemSelected(item)
     }
 
-    // Helper function to show Snackbar
     private fun showSnackbar(message: String) {
-        // Snackbar'ı Activity'nin root view'ına bağlamak, konumlandırma ve tuşları engelleme konusunda Material Design'ın önerdiği yöntemdir.
-        // Snackbar varsayılan olarak ekranın altından yükselir ve tuşların üzerini kaplar ancak tuşları itmez.
-        // LENGTH_SHORT süresi, mesajın kısa kalmasını sağlar.
         Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT).show()
     }
 }
 
-// DrawingModeType enum (defined outside the class for broader access)
 enum class DrawingModeType {
     SMALL, MEDIUM, LARGE
 }

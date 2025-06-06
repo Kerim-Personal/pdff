@@ -21,7 +21,9 @@
         <item name="android:windowBackground">@color/serene_blue_dark</item>
     </style>
 
-    <style name="Theme.Pdf.PdfView" parent="Theme.Material3.Dark">
+    <style name="Theme.Pdf.PdfView" parent="Theme.Material3.Dark.NoActionBar">
         <item name="colorPrimary">@color/serene_blue_primary</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
     </style>
 </resources>
