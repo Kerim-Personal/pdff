@@ -190,4 +190,11 @@
     <string name="topic_functional_applications">Applications of Functional Analysis (Quantum Mechanics, Signal Processing)</string>
 
     <string name="search_title">Search</string>
+
+    <string name="ai_assistant_button_desc">AI Assistant</string>
+    <string name="ai_chat_title">AI Study Assistant</string>
+    <string name="ai_chat_question_hint">Ask a question about the PDF...</string>
+    <string name="ai_chat_thinking">Thinking...</string>
+    <string name="ai_chat_error">Sorry, an error occurred. Please try again.</string>
+    <string name="ai_chat_info">Answers are generated based on the content of this PDF.</string>
 </resources>
