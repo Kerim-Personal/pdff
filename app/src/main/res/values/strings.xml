@@ -192,4 +192,5 @@
     <string name="topic_functional_weak_topologies">Zayıf Topolojiler</string>
     <string name="topic_functional_applications">Fonksiyonel Analizin Uygulamaları (Kuantum Mekaniği, Sinyal İşleme)</string>
 
+    <string name="search_title">Ara</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.example.pdf
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -18,35 +19,27 @@ class CourseAdapter(
 ) : RecyclerView.Adapter<CourseAdapter.CourseViewHolder>() {
 
     inner class CourseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val courseHeaderLayout: LinearLayout = itemView.findViewById(R.id.courseHeaderLayout)
+        val courseHeaderLayout: LinearLayout = itemView.findViewById(R.id.courseHeaderLayout)
         val courseTitleTextView: TextView = itemView.findViewById(R.id.textViewCourseTitle)
         val expandIconImageView: ImageView = itemView.findViewById(R.id.imageViewExpandIcon)
         val topicsContainerLayout: LinearLayout = itemView.findViewById(R.id.topicsContainerLayout)
 
         init {
             courseHeaderLayout.setOnClickListener {
-                // Tıklandığında ses ve titreşim geri bildirimi verilir.
                 UIFeedbackHelper.provideFeedback(it)
 
                 val position = bindingAdapterPosition
                 if (position != RecyclerView.NO_POSITION) {
                     val clickedCourse = courses[position]
 
-                    // --- DEĞİŞTİRİLEN MANTIK BAŞLANGICI ---
-                    // Eğer tıklanan kurs zaten açık değilse, diğer açık kursları kapat
                     if (!clickedCourse.isExpanded) {
-                        // Mevcut açık olan kursun pozisyonunu bul
                         val currentlyExpandedPosition = courses.indexOfFirst { course -> course.isExpanded }
-
                         if (currentlyExpandedPosition != -1) {
-                            // Eğer başka bir kurs açıksa, onu kapat
                             courses[currentlyExpandedPosition].isExpanded = false
                             notifyItemChanged(currentlyExpandedPosition)
                         }
                     }
-                    // --- DEĞİŞTİRİLEN MANTIK SONU ---
 
-                    // Tıklanan kursun durumunu değiştir
                     clickedCourse.isExpanded = !clickedCourse.isExpanded
                     notifyItemChanged(position)
                 }
@@ -124,6 +117,14 @@ class CourseAdapter(
     }
 
     override fun getItemCount(): Int = courses.size
+
+    // YENİ EKLENEN FONKSİYON: Arama sonuçlarına göre listeyi günceller.
+    @SuppressLint("NotifyDataSetChanged")
+    fun filterList(filteredList: List<Course>) {
+        courses.clear()
+        courses.addAll(filteredList)
+        notifyDataSetChanged()
+    }
 
     private fun assetExists(fileName: String): Boolean {
         return try {
