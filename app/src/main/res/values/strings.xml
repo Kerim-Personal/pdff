@@ -199,4 +199,5 @@
     <string name="ai_chat_thinking">Düşünüyorum...</string>
     <string name="ai_chat_error">Üzgünüm, bir hata oluştu. Lütfen tekrar deneyin.</string>
     <string name="ai_chat_info">Cevaplar bu PDF içeriğine göre üretilmektedir.</string>
+    <string name="send_question_desc">Soruyu gönder</string>
 </resources>

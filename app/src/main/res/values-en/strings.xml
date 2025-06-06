@@ -197,4 +197,5 @@
     <string name="ai_chat_thinking">Thinking...</string>
     <string name="ai_chat_error">Sorry, an error occurred. Please try again.</string>
     <string name="ai_chat_info">Answers are generated based on the content of this PDF.</string>
+    <string name="send_question_desc">Send question</string>
 </resources>

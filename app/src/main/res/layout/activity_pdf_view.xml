@@ -27,7 +27,9 @@
         android:layout_alignParentBottom="true"
         android:layout_margin="16dp"
         android:contentDescription="@string/ai_assistant_button_desc"
-        app:srcCompat="@android:drawable/ic_dialog_email"
-        app:tint="@android:color/white"/>
+        app:srcCompat="@drawable/ic_ai_assistant"
+        app:tint="@android:color/white"
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
 </RelativeLayout>

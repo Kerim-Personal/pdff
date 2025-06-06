@@ -1,14 +1,12 @@
 package com.example.pdf
 
-// YENİ: BuildConfig importu
-import com.example.pdf.BuildConfig // Bu satırın olduğundan emin olun
 import android.content.Context
 import android.os.Bundle
-import android.text.method.ScrollingMovementMethod
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
+import android.view.animation.AnimationUtils
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
@@ -27,6 +25,7 @@ import com.tom_roush.pdfbox.android.PDFBoxResourceLoader
 import com.tom_roush.pdfbox.pdmodel.PDDocument
 import com.tom_roush.pdfbox.text.PDFTextStripper
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -42,7 +41,6 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
         val apiKey = BuildConfig.GEMINI_API_KEY
         if (apiKey.isEmpty() || apiKey == "YOUR_API_KEY" || apiKey == "\"\"") {
             Log.e("GeminiAI", "API Anahtarı BuildConfig içerisinde bulunamadı veya geçersiz. Lütfen local.properties dosyasını ve build.gradle.kts yapılandırmasını kontrol edin.")
-            // Kullanıcıya Toast ile bilgi verilebilir.
             Toast.makeText(this, "AI Asistanı için API anahtarı yapılandırılmamış.", Toast.LENGTH_LONG).show()
         }
         GenerativeModel(
@@ -74,7 +72,6 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
         pdfView = findViewById(R.id.pdfView)
         progressBar = findViewById(R.id.progressBarPdf)
         fabAiChat = findViewById(R.id.fab_ai_chat)
-        fabAiChat.visibility = View.GONE
 
         if (pdfAssetName != null) {
             displayPdfFromAssets(pdfAssetName!!)
@@ -127,8 +124,6 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
         val textViewAnswer = dialogView.findViewById<TextView>(R.id.textViewAnswer)
         val progressChat = dialogView.findViewById<ProgressBar>(R.id.progressChat)
 
-        textViewAnswer.movementMethod = ScrollingMovementMethod()
-
         val dialog = builder.create()
 
         buttonSend.setOnClickListener {
@@ -137,6 +132,7 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
                 textViewAnswer.text = ""
                 progressChat.visibility = View.VISIBLE
                 buttonSend.isEnabled = false
+                editTextQuestion.isEnabled = false
 
                 lifecycleScope.launch {
                     try {
@@ -151,17 +147,19 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
                         "$fullPdfText"
                         """.trimIndent()
 
-                        val responseText = withContext(Dispatchers.IO) {
-                            generativeModel.generateContent(prompt).text
+                        val responseFlow = generativeModel.generateContentStream(prompt)
+
+                        responseFlow.collect { chunk ->
+                            textViewAnswer.append(chunk.text)
                         }
-                        textViewAnswer.text = responseText ?: getString(R.string.ai_chat_error)
+
                     } catch (e: Exception) {
-                        textViewAnswer.text = getString(R.string.ai_chat_error)
+                        textViewAnswer.text = getString(R.string.ai_chat_error) + "\n\n" + e.localizedMessage
                         Log.e("GeminiError", "AI Hatası: ", e)
-                        Toast.makeText(applicationContext, "AI Asistanı ile iletişim kurulamadı: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
                     } finally {
                         progressChat.visibility = View.GONE
                         buttonSend.isEnabled = true
+                        editTextQuestion.isEnabled = true
                     }
                 }
             } else {
@@ -171,9 +169,8 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
         dialog.show()
     }
 
+
     private fun extractTextFromPdf(assetName: String) {
-        // Bu fonksiyon artık ana progressBar'ı doğrudan yönetmiyor,
-        // çünkü displayPdfFromAssets ve loadComplete bunu yapıyor.
         lifecycleScope.launch(Dispatchers.IO) {
             try {
                 PDFBoxResourceLoader.init(applicationContext)
@@ -185,6 +182,8 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
                             fullPdfText = text
                             val apiKey = BuildConfig.GEMINI_API_KEY
                             if (text.isNotBlank() && apiKey.isNotEmpty() && apiKey != "YOUR_API_KEY" && apiKey != "\"\"") {
+                                val fadeInAnimation = AnimationUtils.loadAnimation(applicationContext, R.anim.fade_in)
+                                fabAiChat.startAnimation(fadeInAnimation)
                                 fabAiChat.visibility = View.VISIBLE
                             } else if (text.isBlank()) {
                                 Toast.makeText(applicationContext, "PDF'ten metin çıkarılamadı veya PDF boş.", Toast.LENGTH_LONG).show()
@@ -199,7 +198,6 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
                     Log.e("PdfTextExtraction", "Hata: ", e)
                 }
             }
-            // Boş if bloğu (eski satır 212 civarı) kaldırıldı.
         }
     }
 
