@@ -5,7 +5,7 @@
     android:id="@+id/root_layout_pdf_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".PdfViewActivity">
+    android:background="?attr/colorSurface" tools:context=".PdfViewActivity">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/pdfToolbar"
@@ -64,8 +64,8 @@
         android:layout_margin="16dp"
         android:contentDescription="@string/ai_assistant_button_desc"
         app:srcCompat="@drawable/ic_ai_assistant"
-        app:tint="@color/serene_text_dark"
-        app:backgroundTint="@android:color/white"
+        app:tint="?attr/colorOnPrimary"
+        app:backgroundTint="?attr/colorPrimaryContainer"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:visibility="gone"
@@ -78,8 +78,8 @@
         android:layout_margin="16dp"
         android:contentDescription="@string/reading_mode_description"
         app:srcCompat="@drawable/ic_eye_solid"
-        app:tint="@color/serene_text_dark"
-        app:backgroundTint="@android:color/white"
+        app:tint="?attr/colorOnPrimary"
+        app:backgroundTint="?attr/colorPrimaryContainer"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         android:visibility="visible"
@@ -96,7 +96,7 @@
         app:cardCornerRadius="8dp"
         app:cardElevation="4dp"
         app:strokeWidth="0dp"
-        app:cardBackgroundColor="@color/serene_blue_dark"
+        app:cardBackgroundColor="?attr/colorPrimary"
         android:visibility="visible"
         tools:visibility="visible">
 
@@ -127,7 +127,7 @@
                     app:fabSize="mini"
                     app:maxImageSize="18dp"
                     app:backgroundTint="@android:color/transparent"
-                    app:rippleColor="@color/serene_blue_primary"
+                    app:rippleColor="?attr/colorAccentDynamic"
                     app:elevation="0dp"
                     />
 
@@ -141,7 +141,7 @@
                     app:fabSize="mini"
                     app:maxImageSize="18dp"
                     app:backgroundTint="@android:color/transparent"
-                    app:rippleColor="@color/serene_blue_primary"
+                    app:rippleColor="?attr/colorAccentDynamic"
                     app:elevation="0dp"
                     />
             </LinearLayout>
@@ -246,7 +246,7 @@
                     app:fabSize="mini"
                     app:maxImageSize="18dp"
                     app:backgroundTint="@android:color/transparent"
-                    app:rippleColor="@color/serene_blue_primary"
+                    app:rippleColor="?attr/colorAccentDynamic"
                     app:elevation="0dp"
                     />
             </LinearLayout>
