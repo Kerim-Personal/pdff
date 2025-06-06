@@ -22,14 +22,35 @@ class MainActivity : AppCompatActivity() {
     private lateinit var recyclerViewCourses: RecyclerView
     private lateinit var courseAdapter: CourseAdapter
     private val courseList = mutableListOf<Course>()
-    private val fullCourseList = mutableListOf<Course>() // Arama için orijinal listenin kopyası
+    private val fullCourseList = mutableListOf<Course>()
 
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(LocaleHelper.onAttach(newBase))
-        applyTheme()
+        // applyThemeAndColor() çağrısı buradan kaldırıldı. onCreate metoduna taşındı.
+    }
+
+    private fun applyThemeAndColor() {
+        val selectedColorThemeIndex = SharedPreferencesManager.getAppColorTheme(this)
+        val currentNightMode = SharedPreferencesManager.getTheme(this)
+
+        val themeResId = when (selectedColorThemeIndex) {
+            0 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_SereneBlue_Dark else R.style.Theme_Pdf_SereneBlue_Light
+            1 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_Red_Dark else R.style.Theme_Pdf_Red_Light
+            2 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_Green_Dark else R.style.Theme_Pdf_Green_Light
+            3 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_Purple_Dark else R.style.Theme_Pdf_Purple_Light
+            4 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_Orange_Dark else R.style.Theme_Pdf_Orange_Light
+            5 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_DeepPurple_Dark else R.style.Theme_Pdf_DeepPurple_Light
+            6 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_Indigo_Dark else R.style.Theme_Pdf_Indigo_Light
+            7 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_Cyan_Dark else R.style.Theme_Pdf_Cyan_Light
+            8 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_Pink_Dark else R.style.Theme_Pdf_Pink_Light
+            9 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_Brown_Dark else R.style.Theme_Pdf_Brown_Light
+            else -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_SereneBlue_Dark else R.style.Theme_Pdf_SereneBlue_Light
+        }
+        setTheme(themeResId)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        applyThemeAndColor() // Temayı ayarlayan metod buraya taşındı.
         super.onCreate(savedInstanceState)
         UIFeedbackHelper.init(this)
         setContentView(R.layout.activity_main)
@@ -152,7 +173,8 @@ class MainActivity : AppCompatActivity() {
         )))
         fullCourseList.add(Course(getString(R.string.course_numerical_analysis), listOf(
             getString(R.string.topic_numerical_error_analysis), getString(R.string.topic_numerical_root_finding), getString(R.string.topic_numerical_linear_systems),
-            getString(R.string.topic_numerical_iterative_methods), getString(R.string.topic_numerical_interpolation), getString(R.string.topic_numerical_least_squares),
+            getString(R.string.topic_numerical_iterative_methods), // DÜZELTME BURADA
+            getString(R.string.topic_numerical_interpolation), getString(R.string.topic_numerical_least_squares),
             getString(R.string.topic_numerical_differentiation_integration), getString(R.string.topic_numerical_matrix_decomposition), getString(R.string.topic_numerical_optimization)
         )))
         fullCourseList.add(Course(getString(R.string.course_linear_algebra), listOf(
@@ -173,7 +195,8 @@ class MainActivity : AppCompatActivity() {
         )))
         fullCourseList.add(Course(getString(R.string.course_number_theory), listOf(
             getString(R.string.topic_number_divisibility), getString(R.string.topic_number_prime_numbers), getString(R.string.topic_number_modular_arithmetic),
-            getString(R.string.topic_number_chinese_remainder), getString(R.string.topic_number_fermat_euler), getString(R.string.topic_number_diophantine),
+            getString(R.string.topic_number_chinese_remainder), getString(R.string.topic_number_fermat_euler),
+            getString(R.string.topic_number_diophantine), // DÜZELTME BURADA: 'diophantus' yerine 'diophantine'
             getString(R.string.topic_number_cryptography), getString(R.string.topic_number_quadratic_residues), getString(R.string.topic_number_analytic_number_theory)
         )))
         fullCourseList.add(Course(getString(R.string.course_differential_equations), listOf(
@@ -215,10 +238,5 @@ class MainActivity : AppCompatActivity() {
         courseList.addAll(fullCourseList)
 
         courseAdapter.notifyDataSetChanged()
-    }
-
-    private fun applyTheme() {
-        val theme = SharedPreferencesManager.getTheme(this)
-        AppCompatDelegate.setDefaultNightMode(theme)
     }
 }

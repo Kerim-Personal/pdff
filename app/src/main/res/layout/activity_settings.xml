@@ -43,17 +43,40 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/baseline_settings_24"
-            app:tint="?attr/colorOnSurfaceVariant" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/theme_title"
-            android:textSize="18sp"
-            android:textColor="?attr/colorOnSurface"
-            android:layout_marginStart="16dp"/>
+            app:tint="?attr/colorOnSurfaceVariant"
+            android:contentDescription="@string/theme_settings" /> <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/theme_title"
+        android:textSize="18sp"
+        android:textColor="?attr/colorOnSurface"
+        android:layout_marginStart="16dp"/>
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/layoutAppColorSettings"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingVertical="12dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center_vertical"
+        android:background="?attr/selectableItemBackground">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/baseline_settings_24"
+            app:tint="?attr/colorOnSurfaceVariant"
+            android:contentDescription="@string/app_color_title" /> <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/app_color_title"
+        android:textSize="18sp"
+        android:textColor="?attr/colorOnSurface"
+        android:layout_marginStart="16dp"/>
+    </LinearLayout>
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
@@ -75,15 +98,14 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/baseline_settings_24"
-            app:tint="?attr/colorOnSurfaceVariant" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/language_settings"
-            android:textSize="18sp"
-            android:textColor="?attr/colorOnSurface"
-            android:layout_marginStart="16dp"/>
+            app:tint="?attr/colorOnSurfaceVariant"
+            android:contentDescription="@string/language_settings" /> <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/language_settings"
+        android:textSize="18sp"
+        android:textColor="?attr/colorOnSurface"
+        android:layout_marginStart="16dp"/>
     </LinearLayout>
 
     <View

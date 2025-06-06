@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="dil_seciniz">Select Language</string>
     <string name="language_turkish">Türkçe</string>
@@ -81,8 +82,7 @@
     <string name="topic_numerical_error_analysis">Error Analysis and Numerical Stability</string>
     <string name="topic_numerical_root_finding">Methods for Finding Roots of Equations</string>
     <string name="topic_numerical_linear_systems">Numerical Solution of Linear Systems</string>
-    <string name="topic_numerical_iterative_methods">Iterative Methods (Jacobi, Gauss-Seidel)</string>
-    <string name="topic_numerical_interpolation">Interpolation and Polynomial Approximation</string>
+    <string name="topic_numerical_iterative_methods">Iterative Methods (Jacobi, Gauss-Seidel)</string> <string name="topic_numerical_interpolation">Interpolation and Polynomial Approximation</string>
     <string name="topic_numerical_least_squares">Least Squares Method</string>
     <string name="topic_numerical_differentiation_integration">Numerical Differentiation, Integration, and Differential Equations</string>
     <string name="topic_numerical_matrix_decomposition">Matrix Decompositions (LU, QR, SVD)</string>
@@ -122,8 +122,7 @@
     <string name="topic_number_modular_arithmetic">Modular Arithmetic</string>
     <string name="topic_number_chinese_remainder">Chinese Remainder Theorem</string>
     <string name="topic_number_fermat_euler">Fermat\'s and Euler\'s Theorems</string>
-    <string name="topic_number_diophantine">Diophantine Equations</string>
-    <string name="topic_number_cryptography">Cryptography and Applications (RSA, Elliptic Curves)</string>
+    <string name="topic_number_diophantine">Diophantine Equations</string> <string name="topic_number_cryptography">Cryptography and Applications (RSA, Elliptic Curves)</string>
     <string name="topic_number_quadratic_residues">Quadratic Residues and the Legendre Symbol</string>
     <string name="topic_number_analytic_number_theory">Analytic Number Theory (Zeta Function, Prime Number Theorem)</string>
 
@@ -199,29 +198,42 @@
     <string name="ai_chat_info">Answers are generated based on the content of this PDF.</string>
     <string name="send_question_desc">Send question</string>
 
-    <string name="reading_mode_description">Okuma Modu</string>
-    <string name="toggle_drawing_description">Çizimi Aç/Kapat</string>
-    <string name="eraser_description">Silgi</string>
-    <string name="reading_mode_off_toast">Okuma Modu: Kapalı</string>
-    <string name="reading_mode_low_toast">Okuma Modu: Düşük</string>
-    <string name="reading_mode_medium_toast">Okuma Modu: Orta</string>
-    <string name="reading_mode_high_toast">Okuma Modu: Yüksek</string>
-    <string name="drawing_mode_off_toast">Çizim Modu: Kapalı</string>
-    <string name="drawing_mode_pencil_toast">Çizim Modu: Kalem</string>
-    <string name="drawing_mode_eraser_toast">Çizim Modu: Silgi</string>
-    <string name="all_drawings_cleared_toast">Tüm çizimler silindi!</string>
-    <string name="color_red_description">Kırmızı renk</string>
-    <string name="color_blue_description">Mavi renk</string>
-    <string name="color_black_description">Siyah renk</string>
-    <string name="size_small_description">Küçük boyut</string>
-    <string name="size_medium_description">Orta boyut</string>
-    <string name="size_large_description">Büyük boyut</string>
+    <string name="reading_mode_description">Reading Mode</string>
+    <string name="toggle_drawing_description">Toggle Drawing</string>
+    <string name="eraser_description">Eraser</string>
+    <string name="reading_mode_off_toast">Reading Mode: Off</string>
+    <string name="reading_mode_low_toast">Reading Mode: Low</string>
+    <string name="reading_mode_medium_toast">Reading Mode: Medium</string>
+    <string name="reading_mode_high_toast">Reading Mode: High</string>
+    <string name="drawing_mode_off_toast">Drawing Mode: Off</string>
+    <string name="drawing_mode_pencil_toast">Drawing Mode: Pencil</string>
+    <string name="drawing_mode_eraser_toast">Drawing Mode: Eraser</string>
+    <string name="all_drawings_cleared_toast">All drawings cleared!</string>
+    <string name="color_red_description">Red color</string>
+    <string name="color_blue_description">Blue color</string>
+    <string name="color_black_description">Black color</string>
+    <string name="size_small_description">Small size</string>
+    <string name="size_medium_description">Medium size</string>
+    <string name="size_large_description">Large size</string>
 
-    <string name="ai_assistant_api_key_not_configured">AI Asistanı için API anahtarı yapılandırılmamış.</string>
-    <string name="ai_feature_api_key_not_set">AI özelliği için API anahtarı ayarlanmamış.</string>
-    <string name="pdf_text_not_ready">PDF metni henüz hazır değil, lütfen bekleyin.</string>
-    <string name="please_enter_a_question">Lütfen bir soru girin.</string>
-    <string name="pdf_load_failed_with_error">PDF yüklenemedi: %1$s</string>
-    <string name="pdf_text_extraction_failed">PDF metni çıkarılırken hata: %1$s</string>
-    <string name="pdf_text_blank_or_empty">PDF\'ten metin çıkarılamadı veya PDF boş.</string>
+    <string name="ai_assistant_api_key_not_configured">AI Assistant API key not configured.</string>
+    <string name="ai_feature_api_key_not_set">API key for AI feature not set.</string>
+    <string name="pdf_text_not_ready">PDF text not ready, please wait.</string>
+    <string name="please_enter_a_question">Please enter a question.</string>
+    <string name="pdf_load_failed_with_error">PDF failed to load: %1$s</string>
+    <string name="pdf_text_extraction_failed">Error extracting PDF text: %1$s</string>
+    <string name="pdf_text_blank_or_empty">Could not extract text from PDF or PDF is blank.</string>
+
+    <string name="app_color_title">App Color</string>
+    <string name="theme_color_serene_blue">Serene Blue</string>
+    <string name="theme_color_red">Red</string>
+    <string name="theme_color_green">Green</string>
+    <string name="theme_color_purple">Purple</string>
+    <string name="theme_color_orange">Orange</string>
+    <string name="theme_color_deep_purple">Deep Purple</string>
+    <string name="theme_color_indigo">Indigo</string>
+    <string name="theme_color_cyan">Cyan</string>
+    <string name="theme_color_pink">Pink</string>
+    <string name="theme_color_brown">Brown</string>
+    <string name="theme_color_unknown">Unknown Color</string>
 </resources>

@@ -83,8 +83,7 @@
     <string name="topic_numerical_error_analysis">Hata Analizi ve Sayısal Stabilite</string>
     <string name="topic_numerical_root_finding">Denklem Köklerini Bulma Metotları</string>
     <string name="topic_numerical_linear_systems">Lineer Sistemlerin Sayısal Çözümü</string>
-    <string name="topic_numerical_iterative_methods">İteratif Metotlar (Jacobi, Gauss-Seidel)</string>
-    <string name="topic_numerical_interpolation">İnterpolasyon ve Polinom Yaklaşımı</string>
+    <string name="topic_numerical_iterative_methods">İteratif Metotlar (Jacobi, Gauss-Seidel)</string> <string name="topic_numerical_interpolation">İnterpolasyon ve Polinom Yaklaşımı</string>
     <string name="topic_numerical_least_squares">En Küçük Kareler Yöntemi</string>
     <string name="topic_numerical_differentiation_integration">Sayısal Türev, İntegral ve Diferansiyel Denklemler</string>
     <string name="topic_numerical_matrix_decomposition">Matris Ayrışımları (LU, QR, SVD)</string>
@@ -225,4 +224,17 @@
     <string name="pdf_load_failed_with_error">PDF yüklenemedi: %1$s</string>
     <string name="pdf_text_extraction_failed">PDF metni çıkarılırken hata: %1$s</string>
     <string name="pdf_text_blank_or_empty">PDF\'ten metin çıkarılamadı veya PDF boş.</string>
+
+    <string name="app_color_title">Uygulama Rengi</string>
+    <string name="theme_color_serene_blue">Sakin Mavi</string>
+    <string name="theme_color_red">Kırmızı</string>
+    <string name="theme_color_green">Yeşil</string>
+    <string name="theme_color_purple">Mor</string>
+    <string name="theme_color_orange">Turuncu</string>
+    <string name="theme_color_deep_purple">Koyu Mor</string>
+    <string name="theme_color_indigo">İndigo</string>
+    <string name="theme_color_cyan">Turkuaz</string>
+    <string name="theme_color_pink">Pembe</string>
+    <string name="theme_color_brown">Kahverengi</string>
+    <string name="theme_color_unknown">Bilinmeyen Renk</string>
 </resources>

@@ -1,22 +1,43 @@
-// kerim-personal/pdff/pdff-8e15915c2ac2245f8364926638cf68db80017906/app/src/main/java/com/example/pdf/NameEntryActivity.kt
 package com.example.pdf
 
-import android.content.Context // Import Context
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputEditText
+import androidx.appcompat.app.AppCompatDelegate
 
 class NameEntryActivity : AppCompatActivity() {
 
-    // Add this override to ensure locale is applied when the activity is attached to its context
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(LocaleHelper.onAttach(newBase))
+        // applyThemeAndColor() çağrısı buradan kaldırıldı. onCreate metoduna taşındı.
+    }
+
+    private fun applyThemeAndColor() {
+        val selectedColorThemeIndex = SharedPreferencesManager.getAppColorTheme(this)
+        val currentNightMode = SharedPreferencesManager.getTheme(this)
+
+        val themeResId = when (selectedColorThemeIndex) {
+            0 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_SereneBlue_Dark else R.style.Theme_Pdf_SereneBlue_Light
+            1 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_Red_Dark else R.style.Theme_Pdf_Red_Light
+            2 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_Green_Dark else R.style.Theme_Pdf_Green_Light
+            3 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_Purple_Dark else R.style.Theme_Pdf_Purple_Light
+            4 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_Orange_Dark else R.style.Theme_Pdf_Orange_Light
+            5 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_DeepPurple_Dark else R.style.Theme_Pdf_DeepPurple_Light
+            6 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_Indigo_Dark else R.style.Theme_Pdf_Indigo_Light
+            7 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_Cyan_Dark else R.style.Theme_Pdf_Cyan_Light
+            8 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_Pink_Dark else R.style.Theme_Pdf_Pink_Light
+            9 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_Brown_Dark else R.style.Theme_Pdf_Brown_Light
+            else -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_SereneBlue_Dark else R.style.Theme_Pdf_SereneBlue_Light
+        }
+        setTheme(themeResId)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        applyThemeAndColor() // Temayı ayarlayan metod buraya taşındı.
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_name_entry)
 
@@ -26,7 +47,6 @@ class NameEntryActivity : AppCompatActivity() {
         buttonContinue.setOnClickListener {
             val name = editTextName.text.toString().trim()
             if (name.isNotEmpty()) {
-                // Save the name and proceed to the main screen
                 SharedPreferencesManager.saveUserName(this, name)
                 val intent = Intent(this, MainActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK

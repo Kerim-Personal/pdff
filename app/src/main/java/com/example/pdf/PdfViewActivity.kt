@@ -34,12 +34,11 @@ import kotlinx.coroutines.withContext
 import android.content.res.ColorStateList
 import androidx.core.graphics.toColorInt
 import android.graphics.Color
-// import android.os.Handler // Unused import directive - Kaldırıldı
-// import android.os.Looper // Unused import directive - Kaldırıldı
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.android.material.appbar.MaterialToolbar
 import java.io.IOException
 import java.io.FileNotFoundException
+import androidx.appcompat.app.AppCompatDelegate // Import eklendi
 
 
 class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorListener, OnPageErrorListener {
@@ -100,9 +99,31 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
 
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(LocaleHelper.onAttach(newBase))
+        // applyThemeAndColor() çağrısı buradan kaldırıldı. onCreate metoduna taşındı.
+    }
+
+    private fun applyThemeAndColor() {
+        val selectedColorThemeIndex = SharedPreferencesManager.getAppColorTheme(this)
+        val currentNightMode = SharedPreferencesManager.getTheme(this)
+
+        val themeResId = when (selectedColorThemeIndex) {
+            0 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_SereneBlue_Dark else R.style.Theme_Pdf_SereneBlue_Light
+            1 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_Red_Dark else R.style.Theme_Pdf_Red_Light
+            2 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_Green_Dark else R.style.Theme_Pdf_Green_Light
+            3 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_Purple_Dark else R.style.Theme_Pdf_Purple_Light
+            4 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_Orange_Dark else R.style.Theme_Pdf_Orange_Light
+            5 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_DeepPurple_Dark else R.style.Theme_Pdf_DeepPurple_Light
+            6 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_Indigo_Dark else R.style.Theme_Pdf_Indigo_Light
+            7 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_Cyan_Dark else R.style.Theme_Pdf_Cyan_Light
+            8 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_Pink_Dark else R.style.Theme_Pdf_Pink_Light
+            9 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_Brown_Dark else R.style.Theme_Pdf_Brown_Light
+            else -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_SereneBlue_Dark else R.style.Theme_Pdf_SereneBlue_Light
+        }
+        setTheme(themeResId)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        applyThemeAndColor() // Temayı ayarlayan metod buraya taşındı.
         super.onCreate(savedInstanceState)
         UIFeedbackHelper.init(this)
         window.setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE)

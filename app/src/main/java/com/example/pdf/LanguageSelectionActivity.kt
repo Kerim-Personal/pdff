@@ -5,14 +5,37 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 
 class LanguageSelectionActivity : AppCompatActivity() {
 
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(LocaleHelper.onAttach(newBase))
+        // applyThemeAndColor() çağrısı buradan kaldırıldı. onCreate metoduna taşındı.
+    }
+
+    private fun applyThemeAndColor() {
+        val selectedColorThemeIndex = SharedPreferencesManager.getAppColorTheme(this)
+        val currentNightMode = SharedPreferencesManager.getTheme(this)
+
+        val themeResId = when (selectedColorThemeIndex) {
+            0 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_SereneBlue_Dark else R.style.Theme_Pdf_SereneBlue_Light
+            1 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_Red_Dark else R.style.Theme_Pdf_Red_Light
+            2 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_Green_Dark else R.style.Theme_Pdf_Green_Light
+            3 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_Purple_Dark else R.style.Theme_Pdf_Purple_Light
+            4 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_Orange_Dark else R.style.Theme_Pdf_Orange_Light
+            5 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_DeepPurple_Dark else R.style.Theme_Pdf_DeepPurple_Light
+            6 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_Indigo_Dark else R.style.Theme_Pdf_Indigo_Light
+            7 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_Cyan_Dark else R.style.Theme_Pdf_Cyan_Light
+            8 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_Pink_Dark else R.style.Theme_Pdf_Pink_Light
+            9 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_Brown_Dark else R.style.Theme_Pdf_Brown_Light
+            else -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_SereneBlue_Dark else R.style.Theme_Pdf_SereneBlue_Light
+        }
+        setTheme(themeResId)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        applyThemeAndColor() // Temayı ayarlayan metod buraya taşındı.
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_language_selection)
 
@@ -31,23 +54,17 @@ class LanguageSelectionActivity : AppCompatActivity() {
     }
 
     private fun setLanguageAndProceed(languageCode: String) {
-        LocaleHelper.persist(this, languageCode) // Seçilen dili kaydet
+        LocaleHelper.persist(this, languageCode)
 
-        // GÜNCELLENEN MANTIK:
-        // Yönlendirme yapmadan önce kullanıcının adının kayıtlı olup olmadığını kontrol et.
         val intent: Intent
         if (SharedPreferencesManager.getUserName(this) == null) {
-            // İsim kayıtlı değilse, isim girme ekranına git.
             intent = Intent(this, NameEntryActivity::class.java)
         } else {
-            // İsim zaten kayıtlıysa, doğrudan ana ekrana git.
             intent = Intent(this, MainActivity::class.java)
         }
 
-        // ÖNEMLİ: Buradaki intent flag'lerini yeniden gözden geçiriyoruz.
-        // Eski, daha stabil olan FLAG_ACTIVITY_NEW_TASK ve FLAG_ACTIVITY_CLEAR_TASK bayrakları kalmalı.
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
-        finish() // LanguageSelectionActivity'yi kapat
+        finish()
     }
 }

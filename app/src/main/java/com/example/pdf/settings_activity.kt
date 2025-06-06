@@ -14,22 +14,45 @@ class SettingsActivity : AppCompatActivity() {
 
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(LocaleHelper.onAttach(newBase))
-        applyTheme()
+        // applyGlobalThemeAndColor() çağrısı buradan kaldırıldı. onCreate metoduna taşındı.
+    }
+
+    private fun applyGlobalThemeAndColor() {
+        // Varsayılan gece modunu ayarla
+        val theme = SharedPreferencesManager.getTheme(this)
+        AppCompatDelegate.setDefaultNightMode(theme)
+
+        // Seçilen renk temasını Activity'nin teması olarak ayarla
+        val selectedColorThemeIndex = SharedPreferencesManager.getAppColorTheme(this)
+        val currentNightMode = SharedPreferencesManager.getTheme(this)
+
+        val themeResId = when (selectedColorThemeIndex) {
+            0 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_SereneBlue_Dark else R.style.Theme_Pdf_SereneBlue_Light
+            1 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_Red_Dark else R.style.Theme_Pdf_Red_Light
+            2 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_Green_Dark else R.style.Theme_Pdf_Green_Light
+            3 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_Purple_Dark else R.style.Theme_Pdf_Purple_Light
+            4 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_Orange_Dark else R.style.Theme_Pdf_Orange_Light
+            5 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_DeepPurple_Dark else R.style.Theme_Pdf_DeepPurple_Light
+            6 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_Indigo_Dark else R.style.Theme_Pdf_Indigo_Light
+            7 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_Cyan_Dark else R.style.Theme_Pdf_Cyan_Light
+            8 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_Pink_Dark else R.style.Theme_Pdf_Pink_Light
+            9 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_Brown_Dark else R.style.Theme_Pdf_Brown_Light
+            else -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_SereneBlue_Dark else R.style.Theme_Pdf_SereneBlue_Light
+        }
+        setTheme(themeResId)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        applyGlobalThemeAndColor() // Temayı ayarlayan metod buraya taşındı.
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title = getString(R.string.settings_title)
 
-        // --- DÜZELTME 1: Dil Ayarları için eksik olan OnClickListener eklendi ---
         val layoutLanguageSettings: LinearLayout = findViewById(R.id.layoutLanguageSettings)
         layoutLanguageSettings.setOnClickListener {
-            // Tıklama geri bildirimi ver
             UIFeedbackHelper.provideFeedback(it)
-            // Dil seçimi aktivitesini başlat
             val intent = Intent(this, LanguageSelectionActivity::class.java)
             startActivity(intent)
         }
@@ -40,7 +63,12 @@ class SettingsActivity : AppCompatActivity() {
             showThemeDialog()
         }
 
-        // --- DÜZELTME 2: Switch'ler için eksik olan mantık eklendi ---
+        val layoutAppColorSettings: LinearLayout = findViewById(R.id.layoutAppColorSettings)
+        layoutAppColorSettings.setOnClickListener {
+            UIFeedbackHelper.provideFeedback(it)
+            showAppColorDialog()
+        }
+
         setupSwitches()
     }
 
@@ -48,17 +76,14 @@ class SettingsActivity : AppCompatActivity() {
         val switchTouchSound: SwitchMaterial = findViewById(R.id.switchTouchSound)
         val switchHapticFeedback: SwitchMaterial = findViewById(R.id.switchHapticFeedback)
 
-        // Başlangıçta SharedPreferences'dan mevcut ayarları oku ve Switch'leri ayarla
         switchTouchSound.isChecked = SharedPreferencesManager.isTouchSoundEnabled(this)
         switchHapticFeedback.isChecked = SharedPreferencesManager.isHapticFeedbackEnabled(this)
 
-        // Dokunma Sesi Switch'i için listener
         switchTouchSound.setOnCheckedChangeListener { buttonView, isChecked ->
             UIFeedbackHelper.provideFeedback(buttonView)
             SharedPreferencesManager.setTouchSoundEnabled(this, isChecked)
         }
 
-        // Dokunsal Geribildirim Switch'i için listener
         switchHapticFeedback.setOnCheckedChangeListener { buttonView, isChecked ->
             UIFeedbackHelper.provideFeedback(buttonView)
             SharedPreferencesManager.setHapticFeedbackEnabled(this, isChecked)
@@ -84,7 +109,7 @@ class SettingsActivity : AppCompatActivity() {
             .setSingleChoiceItems(themes, checkedItem) { _, which ->
                 checkedItem = which
             }
-            .setPositiveButton(getString(android.R.string.ok)) { dialog, _ -> // Burası güncellendi
+            .setPositiveButton(getString(android.R.string.ok)) { dialog, _ ->
                 val selectedTheme = when (checkedItem) {
                     0 -> AppCompatDelegate.MODE_NIGHT_NO
                     1 -> AppCompatDelegate.MODE_NIGHT_YES
@@ -92,18 +117,40 @@ class SettingsActivity : AppCompatActivity() {
                 }
                 SharedPreferencesManager.saveTheme(this, selectedTheme)
                 AppCompatDelegate.setDefaultNightMode(selectedTheme)
+                recreate() // Aktiviteyi yeniden oluşturarak yeni temayı uygula
                 dialog.dismiss()
             }
-            .setNegativeButton(getString(android.R.string.cancel)) { dialog, _ -> // Burası güncellendi
+            .setNegativeButton(getString(android.R.string.cancel)) { dialog, _ ->
                 dialog.dismiss()
             }
             .create()
             .show()
     }
 
-    private fun applyTheme() {
-        val theme = SharedPreferencesManager.getTheme(this)
-        AppCompatDelegate.setDefaultNightMode(theme)
+    private fun showAppColorDialog() {
+        val themeColorNames = Array(ThemeManager.getAppColorThemeCount()) { i ->
+            ThemeManager.getAppColorThemeName(this, i)
+        }
+
+        val currentAppColorThemeIndex = SharedPreferencesManager.getAppColorTheme(this)
+        var checkedItem = currentAppColorThemeIndex
+
+        AlertDialog.Builder(this)
+            .setTitle(getString(R.string.app_color_title))
+            .setSingleChoiceItems(themeColorNames, checkedItem) { _, which ->
+                checkedItem = which
+            }
+            .setPositiveButton(getString(android.R.string.ok)) { dialog, _ ->
+                if (checkedItem != currentAppColorThemeIndex) {
+                    ThemeManager.applyAppColorTheme(this, checkedItem) // ThemeManager aracılığıyla kaydet ve recreate et
+                }
+                dialog.dismiss()
+            }
+            .setNegativeButton(getString(android.R.string.cancel)) { dialog, _ ->
+                dialog.dismiss()
+            }
+            .create()
+            .show()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

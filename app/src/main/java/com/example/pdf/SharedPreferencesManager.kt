@@ -14,10 +14,10 @@ object SharedPreferencesManager {
     private const val KEY_TOUCH_SOUND = "touch_sound_enabled"
     private const val KEY_THEME = "theme_preference"
     private const val KEY_USER_NAME = "user_name"
-    private const val KEY_PEN_COLOR = "pen_color" // NEW: Pen color key
-    private const val KEY_PEN_SIZE_TYPE = "pen_size_type" // NEW: Pen size type key
-    private const val KEY_ERASER_SIZE_TYPE = "eraser_size_type" // NEW: Eraser size type key
-
+    private const val KEY_PEN_COLOR = "pen_color"
+    private const val KEY_PEN_SIZE_TYPE = "pen_size_type"
+    private const val KEY_ERASER_SIZE_TYPE = "eraser_size_type"
+    private const val KEY_SELECTED_APP_COLOR_THEME = "selected_app_color_theme" // YENİ: Tema renk seçimi
 
     private fun getPreferences(context: Context): SharedPreferences {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -37,8 +37,6 @@ object SharedPreferencesManager {
     }
 
     fun getPenColor(context: Context): Int {
-        // Default to red if no color is saved, using the ARGB value directly
-        // Make sure R.color.red is defined in colors.xml or use a direct hex color:
         return getPreferences(context).getInt(KEY_PEN_COLOR, Color.RED)
     }
 
@@ -47,7 +45,6 @@ object SharedPreferencesManager {
     }
 
     fun getPenSizeType(context: Context): Int {
-        // Default to medium size type (ordinal 1, assuming SMALL=0, MEDIUM=1, LARGE=2)
         return getPreferences(context).getInt(KEY_PEN_SIZE_TYPE, DrawingModeType.MEDIUM.ordinal)
     }
 
@@ -56,8 +53,17 @@ object SharedPreferencesManager {
     }
 
     fun getEraserSizeType(context: Context): Int {
-        // Default to medium size type (ordinal 1)
         return getPreferences(context).getInt(KEY_ERASER_SIZE_TYPE, DrawingModeType.MEDIUM.ordinal)
+    }
+
+    // YENİ FONKSİYONLAR: Tema renk seçimi için
+    fun saveAppColorTheme(context: Context, themeIndex: Int) {
+        getPreferences(context).edit().putInt(KEY_SELECTED_APP_COLOR_THEME, themeIndex).apply()
+    }
+
+    fun getAppColorTheme(context: Context): Int {
+        // Varsayılan olarak ilk renk temasını (mavi) döndür
+        return getPreferences(context).getInt(KEY_SELECTED_APP_COLOR_THEME, 0)
     }
 
     // --- Existing Functions ---
