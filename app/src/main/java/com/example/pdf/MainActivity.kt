@@ -13,6 +13,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
+import java.util.Calendar
 
 class MainActivity : AppCompatActivity() {
 
@@ -22,38 +23,50 @@ class MainActivity : AppCompatActivity() {
 
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(LocaleHelper.onAttach(newBase))
-        // Tema, view oluşturulmadan ÖNCE uygulanmalı
         applyTheme()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        UIFeedbackHelper.init(this) // Ses ve titreşim için
+        UIFeedbackHelper.init(this)
         setContentView(R.layout.activity_main)
 
         val toolbar: MaterialToolbar = findViewById(R.id.topToolbar)
         setSupportActionBar(toolbar)
-        supportActionBar?.title = getString(R.string.app_name)
+        supportActionBar?.title = getGreetingMessage(this)
 
         recyclerViewCourses = findViewById(R.id.recyclerViewCourses)
         setupRecyclerView()
         loadCourses()
     }
 
+    private fun getGreetingMessage(context: Context): String {
+        val name = SharedPreferencesManager.getUserName(context)
+        if (name.isNullOrEmpty()) {
+            return getString(R.string.app_name)
+        }
+
+        val calendar = Calendar.getInstance()
+        return when (calendar.get(Calendar.HOUR_OF_DAY)) {
+            in 5..11 -> getString(R.string.greeting_good_morning, name)
+            in 12..17 -> getString(R.string.greeting_good_day, name)
+            in 18..21 -> getString(R.string.greeting_good_evening, name)
+            else -> getString(R.string.greeting_good_night, name)
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
-        UIFeedbackHelper.release() // Ses kaynaklarını serbest bırak
+        UIFeedbackHelper.release()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
-
         val settingsItem = menu?.findItem(R.id.action_settings)
         settingsItem?.icon?.let { icon ->
             val newIcon = icon.mutate()
-            // HATA DÜZELTİLDİ: Doğru renk referansı kullanıldı
-            val accentColor = ContextCompat.getColor(this, R.color.serene_teal_accent)
-            newIcon.setTint(accentColor)
+            val goldColor = ContextCompat.getColor(this, R.color.gold_accent)
+            newIcon.setTint(goldColor)
             settingsItem.icon = newIcon
         }
         return true
@@ -76,7 +89,7 @@ class MainActivity : AppCompatActivity() {
             this,
             courseList,
             onTopicClickListener = { courseTitle, topicTitle ->
-                Toast.makeText(this, "$courseTitle - $topicTitle (PDF dosyası bulunamadı)", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.topic_pdf_not_found, courseTitle, topicTitle), Toast.LENGTH_SHORT).show()
             },
             onPdfClickListener = { courseTitle, topicTitle, pdfAssetName ->
                 val intent = Intent(this, PdfViewActivity::class.java)
@@ -92,217 +105,98 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("NotifyDataSetChanged")
     private fun loadCourses() {
         courseList.clear()
-        // --- BİLGİSAYAR MÜHENDİSLİĞİ DERSLERİ ---
-        courseList.add(
-            Course(
-                "Kalkülüs", listOf(
-                    "Limit ve Süreklilik",
-                    "Türev Tanımı ve Kuralları",
-                    "Türev Uygulamaları (Ekstrema, Büküm)",
-                    "Ortalama Değer Teoremleri",
-                    "Belirsiz İntegral ve Teknikleri",
-                    "Belirli İntegral ve Uygulamaları",
-                    "Diziler ve Seriler",
-                    "Kuvvet Serileri (Taylor, Maclaurin)",
-                    "Çok Değişkenli Fonksiyonlar",
-                    "Kısmi Türevler ve Lagrange Çarpanları",
-                    "Çok Katlı İntegraller ve Uygulamaları (Hacim, Yüzey Alanı)",
-                    "Vektör Analizi (Gradyan, Diverjans, Stokes)",
-                    "Fourier Dönüşümleri",
-                    "Metrik Uzaylara Giriş"
-                )
-            )
-        )
-        courseList.add(
-            Course(
-                "Kompleks Analiz", listOf(
-                    "Kompleks Sayılar ve Düzlem",
-                    "Analitik Fonksiyonlar",
-                    "Cauchy-Riemann Denklemleri",
-                    "Kompleks İntegrasyon",
-                    "Cauchy İntegral Teoremi ve Formülü",
-                    "Taylor ve Laurent Serileri",
-                    "Rezidü Teoremi, Uygulamaları ve Kontur İntegrali Teknikleri",
-                    "Konform Dönüşümler",
-                    "Kompleks Dinamik Sistemler"
-                )
-            )
-        )
-        courseList.add(
-            Course(
-                "Nümerik Analiz", listOf(
-                    "Hata Analizi ve Sayısal Stabilite",
-                    "Denklem Köklerini Bulma Metotları",
-                    "Lineer Sistemlerin Sayısal Çözümü",
-                    "İteratif Metotlar (Jacobi, Gauss-Seidel)",
-                    "İnterpolasyon ve Polinom Yaklaşımı",
-                    "En Küçük Kareler Yöntemi",
-                    "Sayısal Türev, İntegral ve Diferansiyel Denklemler",
-                    "Matris Ayrışımları (LU, QR, SVD)",
-                    "Optimizasyon Yöntemleri (Gradyan İniş, Newton)"
-                )
-            )
-        )
-        courseList.add(
-            Course(
-                "Lineer Cebir", listOf(
-                    "Matrisler ve Determinantlar",
-                    "Lineer Denklem Sistemleri",
-                    "Vektör Uzayları ve Alt Uzaylar",
-                    "Lineer Bağımsızlık, Taban ve Boyut",
-                    "Lineer Dönüşümler",
-                    "Çekirdek ve Görüntü",
-                    "Özdeğerler ve Özvektörler",
-                    "Köşegenleştirme",
-                    "İç Çarpım Uzayları, Ortogonalite ve Gram-Schmidt",
-                    "Tensörler ve Uygulamaları",
-                    "Sayısal Lineer Cebir (Konjuge Gradyan)"
-                )
-            )
-        )
-        courseList.add(
-            Course(
-                "Soyut Matematik", listOf(
-                    "Mantık ve Önermeler",
-                    "Kümeler Teorisi",
-                    "İspat Yöntemleri",
-                    "Bağıntılar (Denklik, Sıralama)",
-                    "Fonksiyonlar (Birebir, Örten)",
-                    "Kardinalite, Sayılabilirlik ve Süreklilik Hipotezi",
-                    "Temel Kategoriler Teorisi",
-                    "Modeller Teorisi (Giriş)"
-                )
-            )
-        )
-        courseList.add(
-            Course(
-                "Cebir", listOf(
-                    "Gruplar ve Alt Gruplar",
-                    "Devirli Gruplar ve Permütasyon Grupları",
-                    "Lagrange Teoremi",
-                    "Normal Alt Gruplar ve Bölüm Grupları",
-                    "Grup Homomorfizmaları",
-                    "Halkalar, İdealler, Cisimler ve Galois Teorisi",
-                    "Modül Teorisi"
-                )
-            )
-        )
-        courseList.add(
-            Course(
-                "Sayılar Teorisi", listOf(
-                    "Bölünebilme ve Öklid Algoritması",
-                    "Asal Sayılar",
-                    "Modüler Aritmetik",
-                    "Çin Kalan Teoremi",
-                    "Fermat ve Euler Teoremleri",
-                    "Diophantus Denklemleri",
-                    "Kriptografi ve Uygulamaları (RSA, Eliptik Eğriler)",
-                    "Kuadratik Kalıntılar ve Legendre Sembolü",
-                    "Analitik Sayılar Teorisi (Zeta Fonksiyonu, Asal Sayı Teoremi)"
-                )
-            )
-        )
-        courseList.add(
-            Course(
-                "Diferansiyel Denklemler", listOf(
-                    "Birinci Dereceden Denklemler",
-                    "Yüksek Dereceden Lineer Denklemler",
-                    "Belirsiz Katsayılar Yöntemi",
-                    "Parametrelerin Değişimi Yöntemi",
-                    "Laplace Dönüşümleri",
-                    "Başlangıç Değer Problemleri",
-                    "Lineer ve Doğrusal Olmayan Denklem Sistemleri",
-                    "Kaotik Sistemler",
-                    "Nümerik Çözüm Yöntemleri"
-                )
-            )
-        )
-        courseList.add(
-            Course(
-                "Kısmi Türevli Diferansiyel Denklemler", listOf(
-                    "Temel Kavramlar ve Sınıflandırma",
-                    "Fourier Serileri ve Dönüşümleri",
-                    "Değişkenlere Ayırma Yöntemi",
-                    "Isı Denklemi",
-                    "Dalga Denklemi",
-                    "Laplace Denklemi",
-                    "Yeşil Fonksiyonları",
-                    "Sonlu Elemanlar Yöntemi"
-                )
-            )
-        )
-        courseList.add(
-            Course(
-                "Analitik Geometri", listOf(
-                    "Koordinat Sistemleri ve Vektörler",
-                    "Uzayda Doğru ve Düzlem Denklemleri",
-                    "Konik Kesitler (Elips, Parabol, Hiperbol)",
-                    "Kuadrik Yüzeyler",
-                    "Dönüşüm Geometrisi ve Simetri Grupları",
-                    "Projektif Geometri",
-                    "Vektör Alanları ve Uygulamaları"
-                )
-            )
-        )
-        courseList.add(
-            Course(
-                "Diferansiyel Geometri", listOf(
-                    "Eğriler Teorisi",
-                    "Frenet-Serret Formülleri",
-                    "Yüzeyler Teorisi",
-                    "Birinci ve İkinci Temel Formlar",
-                    "Gauss Eğriliği",
-                    "Gauss-Bonnet Teoremi ve Uygulamaları",
-                    "Riemann Geometrisi",
-                    "Manifoldlar Teorisi"
-                )
-            )
-        )
-        courseList.add(
-            Course(
-                "Topoloji", listOf(
-                    "Topolojik Uzaylar",
-                    "Metrik Uzaylar",
-                    "Süreklilik ve Homeomorfizmler",
-                    "Bağlantılılık",
-                    "Kompaktlık",
-                    "Temel Grup, Homotopi ve Homoloji",
-                    "Knot Teorisi",
-                    "Homoloji ve Kohomoloji"
-                )
-            )
-        )
-        courseList.add(
-            Course(
-                "Olasılık", listOf(
-                    "Sayma Teknikleri ve Olasılık Aksiyomları",
-                    "Koşullu Olasılık ve Bayes Teoremi",
-                    "Rastgele Değişkenler",
-                    "Kesikli Dağılımlar (Binom, Poisson)",
-                    "Sürekli Dağılımlar (Üstel, Normal)",
-                    "Beklenen Değer ve Varyans",
-                    "Limit Teoremleri ve Olasılıksal Süreçler",
-                    "Markov Zincirleri",
-                    "İstatistiksel Çıkarım"
-                )
-            )
-        )
-        courseList.add(
-            Course(
-                "Fonksiyonel Analiz", listOf(
-                    "Normlu Uzaylar ve Banach Uzayları",
-                    "Hilbert Uzayları",
-                    "Lineer Operatörler",
-                    "Spectral Teori",
-                    "Zayıf Topolojiler",
-                    "Fonksiyonel Analizin Uygulamaları (Kuantum Mekaniği, Sinyal İşleme)"
-                )
-            )
-        )
+
+        // --- TÜM DERSLER ARTIK STRİNG KAYNAKLARINDAN YÜKLENİYOR ---
+
+        courseList.add(Course(getString(R.string.course_calculus), listOf(
+            getString(R.string.topic_calculus_limit), getString(R.string.topic_calculus_derivative_rules), getString(R.string.topic_calculus_derivative_apps),
+            getString(R.string.topic_calculus_mean_value), getString(R.string.topic_calculus_indefinite_integral), getString(R.string.topic_calculus_definite_integral),
+            getString(R.string.topic_calculus_sequences_series), getString(R.string.topic_calculus_power_series), getString(R.string.topic_calculus_multivariable),
+            getString(R.string.topic_calculus_partial_derivatives), getString(R.string.topic_calculus_multiple_integrals), getString(R.string.topic_calculus_vector_analysis),
+            getString(R.string.topic_calculus_fourier), getString(R.string.topic_calculus_metric_spaces)
+        )))
+
+        courseList.add(Course(getString(R.string.course_complex_analysis), listOf(
+            getString(R.string.topic_complex_numbers), getString(R.string.topic_complex_analytic_functions), getString(R.string.topic_complex_cauchy_riemann),
+            getString(R.string.topic_complex_integration), getString(R.string.topic_complex_cauchy_integral), getString(R.string.topic_complex_taylor_laurent),
+            getString(R.string.topic_complex_residue), getString(R.string.topic_complex_conformal), getString(R.string.topic_complex_dynamic_systems)
+        )))
+
+        courseList.add(Course(getString(R.string.course_numerical_analysis), listOf(
+            getString(R.string.topic_numerical_error_analysis), getString(R.string.topic_numerical_root_finding), getString(R.string.topic_numerical_linear_systems),
+            getString(R.string.topic_numerical_iterative_methods), getString(R.string.topic_numerical_interpolation), getString(R.string.topic_numerical_least_squares),
+            getString(R.string.topic_numerical_differentiation_integration), getString(R.string.topic_numerical_matrix_decomposition), getString(R.string.topic_numerical_optimization)
+        )))
+
+        courseList.add(Course(getString(R.string.course_linear_algebra), listOf(
+            getString(R.string.topic_linear_matrices), getString(R.string.topic_linear_systems), getString(R.string.topic_linear_vector_spaces),
+            getString(R.string.topic_linear_independence), getString(R.string.topic_linear_transformations), getString(R.string.topic_linear_kernel_image),
+            getString(R.string.topic_linear_eigenvalues), getString(R.string.topic_linear_diagonalization), getString(R.string.topic_linear_inner_product),
+            getString(R.string.topic_linear_tensors), getString(R.string.topic_linear_numerical)
+        )))
+
+        courseList.add(Course(getString(R.string.course_abstract_math), listOf(
+            getString(R.string.topic_abstract_logic), getString(R.string.topic_abstract_set_theory), getString(R.string.topic_abstract_proof_methods),
+            getString(R.string.topic_abstract_relations), getString(R.string.topic_abstract_functions), getString(R.string.topic_abstract_cardinality),
+            getString(R.string.topic_abstract_category_theory), getString(R.string.topic_abstract_model_theory)
+        )))
+
+        courseList.add(Course(getString(R.string.course_algebra), listOf(
+            getString(R.string.topic_algebra_groups), getString(R.string.topic_algebra_cyclic_groups), getString(R.string.topic_algebra_lagrange),
+            getString(R.string.topic_algebra_normal_subgroups), getString(R.string.topic_algebra_homomorphisms), getString(R.string.topic_algebra_rings_fields),
+            getString(R.string.topic_algebra_module_theory)
+        )))
+
+        courseList.add(Course(getString(R.string.course_number_theory), listOf(
+            getString(R.string.topic_number_divisibility), getString(R.string.topic_number_prime_numbers), getString(R.string.topic_number_modular_arithmetic),
+            getString(R.string.topic_number_chinese_remainder), getString(R.string.topic_number_fermat_euler), getString(R.string.topic_number_diophantine),
+            getString(R.string.topic_number_cryptography), getString(R.string.topic_number_quadratic_residues), getString(R.string.topic_number_analytic_number_theory)
+        )))
+
+        courseList.add(Course(getString(R.string.course_differential_equations), listOf(
+            getString(R.string.topic_diffeq_first_order), getString(R.string.topic_diffeq_higher_order), getString(R.string.topic_diffeq_undetermined_coefficients),
+            getString(R.string.topic_diffeq_variation_parameters), getString(R.string.topic_diffeq_laplace), getString(R.string.topic_diffeq_initial_value),
+            getString(R.string.topic_diffeq_systems), getString(R.string.topic_diffeq_chaotic_systems), getString(R.string.topic_diffeq_numerical_solutions)
+        )))
+
+        courseList.add(Course(getString(R.string.course_pde), listOf(
+            getString(R.string.topic_pde_concepts), getString(R.string.topic_pde_fourier), getString(R.string.topic_pde_separation_variables),
+            getString(R.string.topic_pde_heat_equation), getString(R.string.topic_pde_wave_equation), getString(R.string.topic_pde_laplace_equation),
+            getString(R.string.topic_pde_green_functions), getString(R.string.topic_pde_finite_element)
+        )))
+
+        courseList.add(Course(getString(R.string.course_analytic_geometry), listOf(
+            getString(R.string.topic_analytic_geometry_coordinates), getString(R.string.topic_analytic_geometry_line_plane), getString(R.string.topic_analytic_geometry_conic_sections),
+            getString(R.string.topic_analytic_geometry_quadric_surfaces), getString(R.string.topic_analytic_geometry_transformations), getString(R.string.topic_analytic_geometry_projective),
+            getString(R.string.topic_analytic_geometry_vector_fields)
+        )))
+
+        courseList.add(Course(getString(R.string.course_differential_geometry), listOf(
+            getString(R.string.topic_diffgeo_curves), getString(R.string.topic_diffgeo_frenet_serret), getString(R.string.topic_diffgeo_surfaces),
+            getString(R.string.topic_diffgeo_fundamental_forms), getString(R.string.topic_diffgeo_gaussian_curvature), getString(R.string.topic_diffgeo_gauss_bonnet),
+            getString(R.string.topic_diffgeo_riemann_geometry), getString(R.string.topic_diffgeo_manifolds)
+        )))
+
+        courseList.add(Course(getString(R.string.course_topology), listOf(
+            getString(R.string.topic_topology_spaces), getString(R.string.topic_topology_metric_spaces), getString(R.string.topic_topology_continuity),
+            getString(R.string.topic_topology_connectedness), getString(R.string.topic_topology_compactness), getString(R.string.topic_topology_fundamental_group),
+            getString(R.string.topic_topology_knot_theory), getString(R.string.topic_topology_homology_cohomology)
+        )))
+
+        courseList.add(Course(getString(R.string.course_probability), listOf(
+            getString(R.string.topic_probability_counting), getString(R.string.topic_probability_conditional), getString(R.string.topic_probability_random_variables),
+            getString(R.string.topic_probability_discrete_distributions), getString(R.string.topic_probability_continuous_distributions), getString(R.string.topic_probability_expected_value),
+            getString(R.string.topic_probability_limit_theorems), getString(R.string.topic_probability_markov_chains), getString(R.string.topic_probability_statistical_inference)
+        )))
+
+        courseList.add(Course(getString(R.string.course_functional_analysis), listOf(
+            getString(R.string.topic_functional_normed_spaces), getString(R.string.topic_functional_hilbert_spaces), getString(R.string.topic_functional_linear_operators),
+            getString(R.string.topic_functional_spectral_theory), getString(R.string.topic_functional_weak_topologies), getString(R.string.topic_functional_applications)
+        )))
+
         courseAdapter.notifyDataSetChanged()
     }
 
-    // Tema uygulama fonksiyonu
     private fun applyTheme() {
         val theme = SharedPreferencesManager.getTheme(this)
         AppCompatDelegate.setDefaultNightMode(theme)

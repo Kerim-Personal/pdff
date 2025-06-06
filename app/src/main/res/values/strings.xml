@@ -23,4 +23,173 @@
     <string name="theme_light">Açık</string>
     <string name="theme_dark">Koyu</string>
     <string name="theme_system_default">Sistem Varsayılanı</string>
+    <string name="name_prompt">Harika! Şimdi adın ne?</string>
+    <string name="name_hint">Adınız</string>
+    <string name="continue_button">Devam Et</string>
+    <string name="enter_valid_name_toast">Lütfen geçerli bir ad girin.</string>
+
+    <string name="pdf_not_found">PDF dosyası bulunamadı.</string>
+    <string name="pdf_loaded_toast">PDF Yüklendi (%1$d sayfa)</string>
+    <string name="error_toast">Hata: %1$s</string>
+    <string name="page_load_error_toast">Sayfa yüklenirken hata: %1$d - %2$s</string>
+    <string name="topic_pdf_not_found">%1$s - %2$s (PDF dosyası bulunamadı)</string>
+
+    <string name="greeting_good_morning">Günaydın, %1$s</string>
+    <string name="greeting_good_day">İyi günler, %1$s</string>
+    <string name="greeting_good_evening">İyi akşamlar, %1$s</string>
+    <string name="greeting_good_night">İyi geceler, %1$s</string>
+
+
+
+    <string name="course_calculus">Kalkülüs</string>
+    <string name="course_complex_analysis">Kompleks Analiz</string>
+    <string name="course_numerical_analysis">Nümerik Analiz</string>
+    <string name="course_linear_algebra">Lineer Cebir</string>
+    <string name="course_abstract_math">Soyut Matematik</string>
+    <string name="course_algebra">Cebir</string>
+    <string name="course_number_theory">Sayılar Teorisi</string>
+    <string name="course_differential_equations">Diferansiyel Denklemler</string>
+    <string name="course_pde">Kısmi Türevli Diferansiyel Denklemler</string>
+    <string name="course_analytic_geometry">Analitik Geometri</string>
+    <string name="course_differential_geometry">Diferansiyel Geometri</string>
+    <string name="course_topology">Topoloji</string>
+    <string name="course_probability">Olasılık</string>
+    <string name="course_functional_analysis">Fonksiyonel Analiz</string>
+
+    <string name="topic_calculus_limit">Limit ve Süreklilik</string>
+    <string name="topic_calculus_derivative_rules">Türev Tanımı ve Kuralları</string>
+    <string name="topic_calculus_derivative_apps">Türev Uygulamaları (Ekstrema, Büküm)</string>
+    <string name="topic_calculus_mean_value">Ortalama Değer Teoremleri</string>
+    <string name="topic_calculus_indefinite_integral">Belirsiz İntegral ve Teknikleri</string>
+    <string name="topic_calculus_definite_integral">Belirli İntegral ve Uygulamaları</string>
+    <string name="topic_calculus_sequences_series">Diziler ve Seriler</string>
+    <string name="topic_calculus_power_series">Kuvvet Serileri (Taylor, Maclaurin)</string>
+    <string name="topic_calculus_multivariable">Çok Değişkenli Fonksiyonlar</string>
+    <string name="topic_calculus_partial_derivatives">Kısmi Türevler ve Lagrange Çarpanları</string>
+    <string name="topic_calculus_multiple_integrals">Çok Katlı İntegraller ve Uygulamaları (Hacim, Yüzey Alanı)</string>
+    <string name="topic_calculus_vector_analysis">Vektör Analizi (Gradyan, Diverjans, Stokes)</string>
+    <string name="topic_calculus_fourier">Fourier Dönüşümleri</string>
+    <string name="topic_calculus_metric_spaces">Metrik Uzaylara Giriş</string>
+
+    <string name="topic_complex_numbers">Kompleks Sayılar ve Düzlem</string>
+    <string name="topic_complex_analytic_functions">Analitik Fonksiyonlar</string>
+    <string name="topic_complex_cauchy_riemann">Cauchy-Riemann Denklemleri</string>
+    <string name="topic_complex_integration">Kompleks İntegrasyon</string>
+    <string name="topic_complex_cauchy_integral">Cauchy İntegral Teoremi ve Formülü</string>
+    <string name="topic_complex_taylor_laurent">Taylor ve Laurent Serileri</string>
+    <string name="topic_complex_residue">Rezidü Teoremi, Uygulamaları ve Kontur İntegrali Teknikleri</string>
+    <string name="topic_complex_conformal">Konform Dönüşümler</string>
+    <string name="topic_complex_dynamic_systems">Kompleks Dinamik Sistemler</string>
+
+    <string name="topic_numerical_error_analysis">Hata Analizi ve Sayısal Stabilite</string>
+    <string name="topic_numerical_root_finding">Denklem Köklerini Bulma Metotları</string>
+    <string name="topic_numerical_linear_systems">Lineer Sistemlerin Sayısal Çözümü</string>
+    <string name="topic_numerical_iterative_methods">İteratif Metotlar (Jacobi, Gauss-Seidel)</string>
+    <string name="topic_numerical_interpolation">İnterpolasyon ve Polinom Yaklaşımı</string>
+    <string name="topic_numerical_least_squares">En Küçük Kareler Yöntemi</string>
+    <string name="topic_numerical_differentiation_integration">Sayısal Türev, İntegral ve Diferansiyel Denklemler</string>
+    <string name="topic_numerical_matrix_decomposition">Matris Ayrışımları (LU, QR, SVD)</string>
+    <string name="topic_numerical_optimization">Optimizasyon Yöntemleri (Gradyan İniş, Newton)</string>
+
+    <string name="topic_linear_matrices">Matrisler ve Determinantlar</string>
+    <string name="topic_linear_systems">Lineer Denklem Sistemleri</string>
+    <string name="topic_linear_vector_spaces">Vektör Uzayları ve Alt Uzaylar</string>
+    <string name="topic_linear_independence">Lineer Bağımsızlık, Taban ve Boyut</string>
+    <string name="topic_linear_transformations">Lineer Dönüşümler</string>
+    <string name="topic_linear_kernel_image">Çekirdek ve Görüntü</string>
+    <string name="topic_linear_eigenvalues">Özdeğerler ve Özvektörler</string>
+    <string name="topic_linear_diagonalization">Köşegenleştirme</string>
+    <string name="topic_linear_inner_product">İç Çarpım Uzayları, Ortogonalite ve Gram-Schmidt</string>
+    <string name="topic_linear_tensors">Tensörler ve Uygulamaları</string>
+    <string name="topic_linear_numerical">Sayısal Lineer Cebir (Konjuge Gradyan)</string>
+
+    <string name="topic_abstract_logic">Mantık ve Önermeler</string>
+    <string name="topic_abstract_set_theory">Kümeler Teorisi</string>
+    <string name="topic_abstract_proof_methods">İspat Yöntemleri</string>
+    <string name="topic_abstract_relations">Bağıntılar (Denklik, Sıralama)</string>
+    <string name="topic_abstract_functions">Fonksiyonlar (Birebir, Örten)</string>
+    <string name="topic_abstract_cardinality">Kardinalite, Sayılabilirlik ve Süreklilik Hipotezi</string>
+    <string name="topic_abstract_category_theory">Temel Kategoriler Teorisi</string>
+    <string name="topic_abstract_model_theory">Modeller Teorisi (Giriş)</string>
+
+    <string name="topic_algebra_groups">Gruplar ve Alt Gruplar</string>
+    <string name="topic_algebra_cyclic_groups">Devirli Gruplar ve Permütasyon Grupları</string>
+    <string name="topic_algebra_lagrange">Lagrange Teoremi</string>
+    <string name="topic_algebra_normal_subgroups">Normal Alt Gruplar ve Bölüm Grupları</string>
+    <string name="topic_algebra_homomorphisms">Grup Homomorfizmaları</string>
+    <string name="topic_algebra_rings_fields">Halkalar, İdealler, Cisimler ve Galois Teorisi</string>
+    <string name="topic_algebra_module_theory">Modül Teorisi</string>
+
+    <string name="topic_number_divisibility">Bölünebilme ve Öklid Algoritması</string>
+    <string name="topic_number_prime_numbers">Asal Sayılar</string>
+    <string name="topic_number_modular_arithmetic">Modüler Aritmetik</string>
+    <string name="topic_number_chinese_remainder">Çin Kalan Teoremi</string>
+    <string name="topic_number_fermat_euler">Fermat ve Euler Teoremleri</string>
+    <string name="topic_number_diophantine">Diophantus Denklemleri</string>
+    <string name="topic_number_cryptography">Kriptografi ve Uygulamaları (RSA, Eliptik Eğriler)</string>
+    <string name="topic_number_quadratic_residues">Kuadratik Kalıntılar ve Legendre Sembolü</string>
+    <string name="topic_number_analytic_number_theory">Analitik Sayılar Teorisi (Zeta Fonksiyonu, Asal Sayı Teoremi)</string>
+
+    <string name="topic_diffeq_first_order">Birinci Dereceden Denklemler</string>
+    <string name="topic_diffeq_higher_order">Yüksek Dereceden Lineer Denklemler</string>
+    <string name="topic_diffeq_undetermined_coefficients">Belirsiz Katsayılar Yöntemi</string>
+    <string name="topic_diffeq_variation_parameters">Parametrelerin Değişimi Yöntemi</string>
+    <string name="topic_diffeq_laplace">Laplace Dönüşümleri</string>
+    <string name="topic_diffeq_initial_value">Başlangıç Değer Problemleri</string>
+    <string name="topic_diffeq_systems">Lineer ve Doğrusal Olmayan Denklem Sistemleri</string>
+    <string name="topic_diffeq_chaotic_systems">Kaotik Sistemler</string>
+    <string name="topic_diffeq_numerical_solutions">Nümerik Çözüm Yöntemleri</string>
+
+    <string name="topic_pde_concepts">Temel Kavramlar ve Sınıflandırma</string>
+    <string name="topic_pde_fourier">Fourier Serileri ve Dönüşümleri</string>
+    <string name="topic_pde_separation_variables">Değişkenlere Ayırma Yöntemi</string>
+    <string name="topic_pde_heat_equation">Isı Denklemi</string>
+    <string name="topic_pde_wave_equation">Dalga Denklemi</string>
+    <string name="topic_pde_laplace_equation">Laplace Denklemi</string>
+    <string name="topic_pde_green_functions">Yeşil Fonksiyonları</string>
+    <string name="topic_pde_finite_element">Sonlu Elemanlar Yöntemi</string>
+
+    <string name="topic_analytic_geometry_coordinates">Koordinat Sistemleri ve Vektörler</string>
+    <string name="topic_analytic_geometry_line_plane">Uzayda Doğru ve Düzlem Denklemleri</string>
+    <string name="topic_analytic_geometry_conic_sections">Konik Kesitler (Elips, Parabol, Hiperbol)</string>
+    <string name="topic_analytic_geometry_quadric_surfaces">Kuadrik Yüzeyler</string>
+    <string name="topic_analytic_geometry_transformations">Dönüşüm Geometrisi ve Simetri Grupları</string>
+    <string name="topic_analytic_geometry_projective">Projektif Geometri</string>
+    <string name="topic_analytic_geometry_vector_fields">Vektör Alanları ve Uygulamaları</string>
+
+    <string name="topic_diffgeo_curves">Eğriler Teorisi</string>
+    <string name="topic_diffgeo_frenet_serret">Frenet-Serret Formülleri</string>
+    <string name="topic_diffgeo_surfaces">Yüzeyler Teorisi</string>
+    <string name="topic_diffgeo_fundamental_forms">Birinci ve İkinci Temel Formlar</string>
+    <string name="topic_diffgeo_gaussian_curvature">Gauss Eğriliği</string>
+    <string name="topic_diffgeo_gauss_bonnet">Gauss-Bonnet Teoremi ve Uygulamaları</string>
+    <string name="topic_diffgeo_riemann_geometry">Riemann Geometrisi</string>
+    <string name="topic_diffgeo_manifolds">Manifoldlar Teorisi</string>
+
+    <string name="topic_topology_spaces">Topolojik Uzaylar</string>
+    <string name="topic_topology_metric_spaces">Metrik Uzaylar</string>
+    <string name="topic_topology_continuity">Süreklilik ve Homeomorfizmler</string>
+    <string name="topic_topology_connectedness">Bağlantılılık</string>
+    <string name="topic_topology_compactness">Kompaktlık</string>
+    <string name="topic_topology_fundamental_group">Temel Grup, Homotopi ve Homoloji</string>
+    <string name="topic_topology_knot_theory">Knot Teorisi</string>
+    <string name="topic_topology_homology_cohomology">Homoloji ve Kohomoloji</string>
+
+    <string name="topic_probability_counting">Sayma Teknikleri ve Olasılık Aksiyomları</string>
+    <string name="topic_probability_conditional">Koşullu Olasılık ve Bayes Teoremi</string>
+    <string name="topic_probability_random_variables">Rastgele Değişkenler</string>
+    <string name="topic_probability_discrete_distributions">Kesikli Dağılımlar (Binom, Poisson)</string>
+    <string name="topic_probability_continuous_distributions">Sürekli Dağılımlar (Üstel, Normal)</string>
+    <string name="topic_probability_expected_value">Beklenen Değer ve Varyans</string>
+    <string name="topic_probability_limit_theorems">Limit Teoremleri ve Olasılıksal Süreçler</string>
+    <string name="topic_probability_markov_chains">Markov Zincirleri</string>
+    <string name="topic_probability_statistical_inference">İstatistiksel Çıkarım</string>
+
+    <string name="topic_functional_normed_spaces">Normlu Uzaylar ve Banach Uzayları</string>
+    <string name="topic_functional_hilbert_spaces">Hilbert Uzayları</string>
+    <string name="topic_functional_linear_operators">Lineer Operatörler</string>
+    <string name="topic_functional_spectral_theory">Spectral Teori</string>
+    <string name="topic_functional_weak_topologies">Zayıf Topolojiler</string>
+    <string name="topic_functional_applications">Fonksiyonel Analizin Uygulamaları (Kuantum Mekaniği, Sinyal İşleme)</string>
+
 </resources>

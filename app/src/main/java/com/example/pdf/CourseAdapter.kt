@@ -25,15 +25,29 @@ class CourseAdapter(
 
         init {
             courseHeaderLayout.setOnClickListener {
-                // --- YENİ EKLENEN SATIR ---
                 // Tıklandığında ses ve titreşim geri bildirimi verilir.
                 UIFeedbackHelper.provideFeedback(it)
-                // -------------------------
 
                 val position = bindingAdapterPosition
                 if (position != RecyclerView.NO_POSITION) {
-                    val course = courses[position]
-                    course.isExpanded = !course.isExpanded
+                    val clickedCourse = courses[position]
+
+                    // --- DEĞİŞTİRİLEN MANTIK BAŞLANGICI ---
+                    // Eğer tıklanan kurs zaten açık değilse, diğer açık kursları kapat
+                    if (!clickedCourse.isExpanded) {
+                        // Mevcut açık olan kursun pozisyonunu bul
+                        val currentlyExpandedPosition = courses.indexOfFirst { course -> course.isExpanded }
+
+                        if (currentlyExpandedPosition != -1) {
+                            // Eğer başka bir kurs açıksa, onu kapat
+                            courses[currentlyExpandedPosition].isExpanded = false
+                            notifyItemChanged(currentlyExpandedPosition)
+                        }
+                    }
+                    // --- DEĞİŞTİRİLEN MANTIK SONU ---
+
+                    // Tıklanan kursun durumunu değiştir
+                    clickedCourse.isExpanded = !clickedCourse.isExpanded
                     notifyItemChanged(position)
                 }
             }
@@ -91,17 +105,13 @@ class CourseAdapter(
                 if (fileActuallyExists) {
                     pdfIconImageView.visibility = View.VISIBLE
                     topicView.setOnClickListener {
-                        // --- YENİ EKLENEN SATIR ---
                         UIFeedbackHelper.provideFeedback(it)
-                        // -------------------------
                         onPdfClickListener(course.title, topicTitle, pdfAssetName)
                     }
                 } else {
                     pdfIconImageView.visibility = View.GONE
                     topicView.setOnClickListener {
-                        // --- YENİ EKLENEN SATIR ---
                         UIFeedbackHelper.provideFeedback(it)
-                        // -------------------------
                         onTopicClickListener(course.title, topicTitle)
                     }
                 }

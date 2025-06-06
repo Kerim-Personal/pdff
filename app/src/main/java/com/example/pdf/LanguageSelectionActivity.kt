@@ -9,8 +9,6 @@ import androidx.appcompat.app.AppCompatActivity
 class LanguageSelectionActivity : AppCompatActivity() {
 
     override fun attachBaseContext(newBase: Context) {
-        // Set locale for the activity itself based on current preference or system default
-        // This ensures "Dil Seçiniz" might be localized if -en strings exist.
         super.attachBaseContext(LocaleHelper.onAttach(newBase))
     }
 
@@ -31,12 +29,21 @@ class LanguageSelectionActivity : AppCompatActivity() {
     }
 
     private fun setLanguageAndProceed(languageCode: String) {
-        LocaleHelper.persist(this, languageCode) // Save the selected language
+        LocaleHelper.persist(this, languageCode) // Seçilen dili kaydet
 
-        // Start MainActivity
-        val intent = Intent(this, MainActivity::class.java)
+        // GÜNCELLENEN MANTIK:
+        // Yönlendirme yapmadan önce kullanıcının adının kayıtlı olup olmadığını kontrol et.
+        val intent: Intent
+        if (SharedPreferencesManager.getUserName(this) == null) {
+            // İsim kayıtlı değilse, isim girme ekranına git.
+            intent = Intent(this, NameEntryActivity::class.java)
+        } else {
+            // İsim zaten kayıtlıysa, doğrudan ana ekrana git.
+            intent = Intent(this, MainActivity::class.java)
+        }
+
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
-        finish() // Close LanguageSelectionActivity
+        finish() // LanguageSelectionActivity'yi kapat
     }
 }

@@ -14,11 +14,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Pdf">
 
+        <!-- YENİ EKLENEN ACTIVITY TANIMI -->
+        <activity
+            android:name=".NameEntryActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Pdf" />
+        <!-- MEVCUT ACTIVITY TANIMLARI -->
         <activity
             android:name=".SettingsActivity"
             android:exported="false"
-            android:theme="@style/Theme.Pdf"/>
-
+            android:theme="@style/Theme.Pdf" />
         <activity
             android:name=".SplashActivity"
             android:exported="true"
@@ -28,17 +33,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".LanguageSelectionActivity"
             android:exported="false"
             android:theme="@style/Theme.Pdf" />
-
         <activity
             android:name=".PdfViewActivity"
             android:exported="false"
             android:theme="@style/Theme.Pdf.PdfView" />
-
         <activity
             android:name=".MainActivity"
             android:exported="false"
@@ -53,7 +55,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
-
     </application>
 
 </manifest>

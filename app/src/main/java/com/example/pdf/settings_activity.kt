@@ -1,7 +1,6 @@
 package com.example.pdf
 
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
@@ -15,7 +14,6 @@ class SettingsActivity : AppCompatActivity() {
 
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(LocaleHelper.onAttach(newBase))
-        // Apply theme before view is created
         applyTheme()
     }
 
@@ -26,14 +24,45 @@ class SettingsActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title = getString(R.string.settings_title)
 
+        // --- DÜZELTME 1: Dil Ayarları için eksik olan OnClickListener eklendi ---
         val layoutLanguageSettings: LinearLayout = findViewById(R.id.layoutLanguageSettings)
-        val layoutThemeSettings: LinearLayout = findViewById(R.id.layoutThemeSettings) // YENİ
+        layoutLanguageSettings.setOnClickListener {
+            // Tıklama geri bildirimi ver
+            UIFeedbackHelper.provideFeedback(it)
+            // Dil seçimi aktivitesini başlat
+            val intent = Intent(this, LanguageSelectionActivity::class.java)
+            startActivity(intent)
+        }
 
+        val layoutThemeSettings: LinearLayout = findViewById(R.id.layoutThemeSettings)
         layoutThemeSettings.setOnClickListener {
+            UIFeedbackHelper.provideFeedback(it)
             showThemeDialog()
         }
 
-        // ... diğer click listener'lar ...
+        // --- DÜZELTME 2: Switch'ler için eksik olan mantık eklendi ---
+        setupSwitches()
+    }
+
+    private fun setupSwitches() {
+        val switchTouchSound: SwitchMaterial = findViewById(R.id.switchTouchSound)
+        val switchHapticFeedback: SwitchMaterial = findViewById(R.id.switchHapticFeedback)
+
+        // Başlangıçta SharedPreferences'dan mevcut ayarları oku ve Switch'leri ayarla
+        switchTouchSound.isChecked = SharedPreferencesManager.isTouchSoundEnabled(this)
+        switchHapticFeedback.isChecked = SharedPreferencesManager.isHapticFeedbackEnabled(this)
+
+        // Dokunma Sesi Switch'i için listener
+        switchTouchSound.setOnCheckedChangeListener { buttonView, isChecked ->
+            UIFeedbackHelper.provideFeedback(buttonView)
+            SharedPreferencesManager.setTouchSoundEnabled(this, isChecked)
+        }
+
+        // Dokunsal Geribildirim Switch'i için listener
+        switchHapticFeedback.setOnCheckedChangeListener { buttonView, isChecked ->
+            UIFeedbackHelper.provideFeedback(buttonView)
+            SharedPreferencesManager.setHapticFeedbackEnabled(this, isChecked)
+        }
     }
 
     private fun showThemeDialog() {
@@ -52,7 +81,7 @@ class SettingsActivity : AppCompatActivity() {
 
         AlertDialog.Builder(this)
             .setTitle(getString(R.string.theme_title))
-            .setSingleChoiceItems(themes, checkedItem) { dialog, which ->
+            .setSingleChoiceItems(themes, checkedItem) { _, which ->
                 checkedItem = which
             }
             .setPositiveButton("OK") { dialog, _ ->
@@ -77,5 +106,11 @@ class SettingsActivity : AppCompatActivity() {
         AppCompatDelegate.setDefaultNightMode(theme)
     }
 
-    // ... onOptionsItemSelected ...
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            finish()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
 }
