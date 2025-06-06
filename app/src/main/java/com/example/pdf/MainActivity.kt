@@ -1,22 +1,24 @@
 package com.example.pdf
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SearchView
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
 import java.util.Calendar
 import java.util.Locale
-import android.util.TypedValue
 
 class MainActivity : AppCompatActivity() {
 
@@ -25,9 +27,17 @@ class MainActivity : AppCompatActivity() {
     private val courseList = mutableListOf<Course>()
     private val fullCourseList = mutableListOf<Course>()
 
+    private val settingsLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            Log.d("ThemeDebug", "MainActivity - SettingsActivity'den RESULT_OK alındı, recreate çağrılıyor.")
+            recreate()
+        }
+    }
+
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(LocaleHelper.onAttach(newBase))
-        // applyThemeAndColor() çağrısı buradan kaldırıldı. onCreate metoduna taşındı.
     }
 
     private fun applyThemeAndColor() {
@@ -48,15 +58,16 @@ class MainActivity : AppCompatActivity() {
             else -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_SereneBlue_Dark else R.style.Theme_Pdf_SereneBlue_Light
         }
         setTheme(themeResId)
+        Log.d("ThemeDebug", "MainActivity - Tema uygulandı: ${resources.getResourceEntryName(themeResId)}, Gece Modu: $currentNightMode, Renk Teması: $selectedColorThemeIndex")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        applyThemeAndColor() // Temayı ayarlayan metod buraya taşındı.
+        Log.d("ThemeDebug", "MainActivity - onCreate çağrıldı.")
+        applyThemeAndColor()
         super.onCreate(savedInstanceState)
         UIFeedbackHelper.init(this)
         setContentView(R.layout.activity_main)
 
-        // Ensure these IDs exist in activity_main.xml
         val toolbar: MaterialToolbar = findViewById(R.id.topToolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.title = getGreetingMessage(this)
@@ -64,6 +75,14 @@ class MainActivity : AppCompatActivity() {
         recyclerViewCourses = findViewById(R.id.recyclerViewCourses)
         setupRecyclerView()
         loadCourses()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        applyThemeAndColor()
+        courseAdapter.notifyDataSetChanged()
+        invalidateOptionsMenu() // Menü ikonlarını yenile
+        Log.d("ThemeDebug", "MainActivity - onStart: Tema yeniden uygulandı.")
     }
 
     private fun getGreetingMessage(context: Context): String {
@@ -105,7 +124,6 @@ class MainActivity : AppCompatActivity() {
         settingsItem?.icon?.let { icon ->
             val newIcon = icon.mutate()
             val typedValue = TypedValue()
-            // Using com.google.android.material.R.attr.colorPrimary to reference Material Design attributes.
             theme.resolveAttribute(com.google.android.material.R.attr.colorPrimary, typedValue, true)
             val settingsIconColor = typedValue.data
             newIcon.setTint(settingsIconColor)
@@ -135,7 +153,7 @@ class MainActivity : AppCompatActivity() {
             R.id.action_settings -> {
                 UIFeedbackHelper.provideFeedback(findViewById(android.R.id.content))
                 val intent = Intent(this, SettingsActivity::class.java)
-                startActivity(intent)
+                settingsLauncher.launch(intent)
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -178,8 +196,7 @@ class MainActivity : AppCompatActivity() {
         )))
         fullCourseList.add(Course(getString(R.string.course_numerical_analysis), listOf(
             getString(R.string.topic_numerical_error_analysis), getString(R.string.topic_numerical_root_finding), getString(R.string.topic_numerical_linear_systems),
-            getString(R.string.topic_numerical_iterative_methods), // DÜZELTME BURADA
-            getString(R.string.topic_numerical_interpolation), getString(R.string.topic_numerical_least_squares),
+            getString(R.string.topic_numerical_iterative_methods), getString(R.string.topic_numerical_interpolation), getString(R.string.topic_numerical_least_squares),
             getString(R.string.topic_numerical_differentiation_integration), getString(R.string.topic_numerical_matrix_decomposition), getString(R.string.topic_numerical_optimization)
         )))
         fullCourseList.add(Course(getString(R.string.course_linear_algebra), listOf(
@@ -201,8 +218,8 @@ class MainActivity : AppCompatActivity() {
         fullCourseList.add(Course(getString(R.string.course_number_theory), listOf(
             getString(R.string.topic_number_divisibility), getString(R.string.topic_number_prime_numbers), getString(R.string.topic_number_modular_arithmetic),
             getString(R.string.topic_number_chinese_remainder), getString(R.string.topic_number_fermat_euler),
-            getString(R.string.topic_number_diophantine), // DÜZELTME BURADA: 'diophantus' yerine 'diophantine'
-            getString(R.string.topic_number_cryptography), getString(R.string.topic_number_quadratic_residues), getString(R.string.topic_number_analytic_number_theory)
+            getString(R.string.topic_number_diophantine), getString(R.string.topic_number_cryptography), getString(R.string.topic_number_quadratic_residues),
+            getString(R.string.topic_number_analytic_number_theory)
         )))
         fullCourseList.add(Course(getString(R.string.course_differential_equations), listOf(
             getString(R.string.topic_diffeq_first_order), getString(R.string.topic_diffeq_higher_order), getString(R.string.topic_diffeq_undetermined_coefficients),
@@ -241,7 +258,6 @@ class MainActivity : AppCompatActivity() {
 
         courseList.clear()
         courseList.addAll(fullCourseList)
-
         courseAdapter.notifyDataSetChanged()
     }
 }

@@ -40,7 +40,7 @@ class SplashActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        applyThemeAndColor() // Temayı ayarlayan metod buraya taşındı.
+        applyThemeAndColor() // Temayı ayarlayan metod buraya taşındı...
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_splash)

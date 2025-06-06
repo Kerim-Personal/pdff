@@ -1,8 +1,10 @@
 package com.example.pdf
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.widget.LinearLayout
 import androidx.appcompat.app.AlertDialog
@@ -14,15 +16,12 @@ class SettingsActivity : AppCompatActivity() {
 
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(LocaleHelper.onAttach(newBase))
-        // applyGlobalThemeAndColor() çağrısı buradan kaldırıldı. onCreate metoduna taşındı.
     }
 
     private fun applyGlobalThemeAndColor() {
-        // Varsayılan gece modunu ayarla
         val theme = SharedPreferencesManager.getTheme(this)
         AppCompatDelegate.setDefaultNightMode(theme)
 
-        // Seçilen renk temasını Activity'nin teması olarak ayarla
         val selectedColorThemeIndex = SharedPreferencesManager.getAppColorTheme(this)
         val currentNightMode = SharedPreferencesManager.getTheme(this)
 
@@ -40,10 +39,12 @@ class SettingsActivity : AppCompatActivity() {
             else -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_SereneBlue_Dark else R.style.Theme_Pdf_SereneBlue_Light
         }
         setTheme(themeResId)
+        Log.d("ThemeDebug", "SettingsActivity - Tema uygulandı: ${resources.getResourceEntryName(themeResId)}, Gece Modu: $currentNightMode, Renk Teması: $selectedColorThemeIndex")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        applyGlobalThemeAndColor() // Temayı ayarlayan metod buraya taşındı.
+        Log.d("ThemeDebug", "SettingsActivity - onCreate çağrıldı.")
+        applyGlobalThemeAndColor()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
@@ -117,7 +118,9 @@ class SettingsActivity : AppCompatActivity() {
                 }
                 SharedPreferencesManager.saveTheme(this, selectedTheme)
                 AppCompatDelegate.setDefaultNightMode(selectedTheme)
-                recreate() // Aktiviteyi yeniden oluşturarak yeni temayı uygula
+                recreate()
+                setResult(Activity.RESULT_OK)
+                Log.d("ThemeDebug", "SettingsActivity - Tema değişti: $selectedTheme, RESULT_OK ayarlandı.")
                 dialog.dismiss()
             }
             .setNegativeButton(getString(android.R.string.cancel)) { dialog, _ ->
@@ -142,7 +145,9 @@ class SettingsActivity : AppCompatActivity() {
             }
             .setPositiveButton(getString(android.R.string.ok)) { dialog, _ ->
                 if (checkedItem != currentAppColorThemeIndex) {
-                    ThemeManager.applyAppColorTheme(this, checkedItem) // ThemeManager aracılığıyla kaydet ve recreate et
+                    ThemeManager.applyAppColorTheme(this, checkedItem)
+                    setResult(Activity.RESULT_OK)
+                    Log.d("ThemeDebug", "SettingsActivity - Renk teması değişti: $checkedItem, RESULT_OK ayarlandı.")
                 }
                 dialog.dismiss()
             }
@@ -155,9 +160,17 @@ class SettingsActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
+            setResult(Activity.RESULT_OK)
+            Log.d("ThemeDebug", "SettingsActivity - Toolbar geri tuşu: RESULT_OK ayarlandı.")
             finish()
             return true
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onBackPressed() {
+        setResult(Activity.RESULT_OK)
+        Log.d("ThemeDebug", "SettingsActivity - Fiziksel geri tuşu: RESULT_OK ayarlandı.")
+        super.onBackPressed()
     }
 }

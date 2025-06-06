@@ -2,8 +2,7 @@ package com.example.pdf
 
 import android.app.Activity
 import android.content.Context
-import androidx.appcompat.app.AppCompatDelegate
-import com.example.pdf.R
+import android.util.Log
 
 object ThemeManager {
 
@@ -15,6 +14,7 @@ object ThemeManager {
     fun applyAppColorTheme(activity: Activity, themeIndex: Int) {
         SharedPreferencesManager.saveAppColorTheme(activity, themeIndex)
         activity.recreate()
+        Log.d("ThemeDebug", "ThemeManager - Renk teması uygulandı: $themeIndex")
     }
 
     fun getAppColorThemeCount(): Int {
@@ -22,7 +22,7 @@ object ThemeManager {
     }
 
     fun getAppColorThemeName(context: Context, themeIndex: Int): String {
-        return when (themeIndex) {
+        val themeName = when (themeIndex) {
             0 -> context.getString(R.string.theme_color_serene_blue)
             1 -> context.getString(R.string.theme_color_red)
             2 -> context.getString(R.string.theme_color_green)
@@ -35,10 +35,12 @@ object ThemeManager {
             9 -> context.getString(R.string.theme_color_brown)
             else -> context.getString(R.string.theme_color_unknown)
         }
+        Log.d("ThemeDebug", "ThemeManager - Renk teması adı alındı: $themeName (index: $themeIndex)")
+        return themeName
     }
 
     fun applyCurrentThemeColors(context: Context) {
-        // Bu metodun içeriği artık boş kalacak veya çağrılmayacak.
-        // Tema seçimi ve uygulaması Activity'lerin onCreate metoduna taşındı.
+        // Boş bırakılmış, tema uygulama Activity'lere taşındı
+        Log.d("ThemeDebug", "ThemeManager - applyCurrentThemeColors çağrıldı (boş)")
     }
 }

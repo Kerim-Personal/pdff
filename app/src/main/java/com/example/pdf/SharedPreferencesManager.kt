@@ -2,8 +2,9 @@ package com.example.pdf
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatDelegate
-import android.graphics.Color // Needed for default color constant
+import android.util.Log
 
 object SharedPreferencesManager {
 
@@ -17,7 +18,7 @@ object SharedPreferencesManager {
     private const val KEY_PEN_COLOR = "pen_color"
     private const val KEY_PEN_SIZE_TYPE = "pen_size_type"
     private const val KEY_ERASER_SIZE_TYPE = "eraser_size_type"
-    private const val KEY_SELECTED_APP_COLOR_THEME = "selected_app_color_theme" // YENİ: Tema renk seçimi
+    private const val KEY_SELECTED_APP_COLOR_THEME = "selected_app_color_theme"
 
     private fun getPreferences(context: Context): SharedPreferences {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -25,84 +26,111 @@ object SharedPreferencesManager {
 
     fun saveUserName(context: Context, name: String) {
         getPreferences(context).edit().putString(KEY_USER_NAME, name).apply()
+        Log.d("ThemeDebug", "SharedPreferencesManager - Kullanıcı adı kaydedildi: $name")
     }
 
     fun getUserName(context: Context): String? {
-        return getPreferences(context).getString(KEY_USER_NAME, null)
+        val name = getPreferences(context).getString(KEY_USER_NAME, null)
+        Log.d("ThemeDebug", "SharedPreferencesManager - Kullanıcı adı alındı: $name")
+        return name
     }
 
-    // NEW FUNCTIONS for Drawing preferences
     fun savePenColor(context: Context, color: Int) {
         getPreferences(context).edit().putInt(KEY_PEN_COLOR, color).apply()
+        Log.d("ThemeDebug", "SharedPreferencesManager - Kalem rengi kaydedildi: $color")
     }
 
     fun getPenColor(context: Context): Int {
-        return getPreferences(context).getInt(KEY_PEN_COLOR, Color.RED)
+        val color = getPreferences(context).getInt(KEY_PEN_COLOR, Color.RED)
+        Log.d("ThemeDebug", "SharedPreferencesManager - Kalem rengi alındı: $color")
+        return color
     }
 
     fun savePenSizeType(context: Context, sizeTypeOrdinal: Int) {
         getPreferences(context).edit().putInt(KEY_PEN_SIZE_TYPE, sizeTypeOrdinal).apply()
+        Log.d("ThemeDebug", "SharedPreferencesManager - Kalem boyutu kaydedildi: $sizeTypeOrdinal")
     }
 
     fun getPenSizeType(context: Context): Int {
-        return getPreferences(context).getInt(KEY_PEN_SIZE_TYPE, DrawingModeType.MEDIUM.ordinal)
+        val size = getPreferences(context).getInt(KEY_PEN_SIZE_TYPE, DrawingModeType.MEDIUM.ordinal)
+        Log.d("ThemeDebug", "SharedPreferencesManager - Kalem boyutu alındı: $size")
+        return size
     }
 
     fun saveEraserSizeType(context: Context, sizeTypeOrdinal: Int) {
         getPreferences(context).edit().putInt(KEY_ERASER_SIZE_TYPE, sizeTypeOrdinal).apply()
+        Log.d("ThemeDebug", "SharedPreferencesManager - Silgi boyutu kaydedildi: $sizeTypeOrdinal")
     }
 
     fun getEraserSizeType(context: Context): Int {
-        return getPreferences(context).getInt(KEY_ERASER_SIZE_TYPE, DrawingModeType.MEDIUM.ordinal)
+        val size = getPreferences(context).getInt(KEY_ERASER_SIZE_TYPE, DrawingModeType.MEDIUM.ordinal)
+        Log.d("ThemeDebug", "SharedPreferencesManager - Silgi boyutu alındı: $size")
+        return size
     }
 
-    // YENİ FONKSİYONLAR: Tema renk seçimi için
     fun saveAppColorTheme(context: Context, themeIndex: Int) {
         getPreferences(context).edit().putInt(KEY_SELECTED_APP_COLOR_THEME, themeIndex).apply()
+        Log.d("ThemeDebug", "SharedPreferencesManager - Renk teması kaydedildi: $themeIndex")
     }
 
     fun getAppColorTheme(context: Context): Int {
-        // Varsayılan olarak ilk renk temasını (mavi) döndür
-        return getPreferences(context).getInt(KEY_SELECTED_APP_COLOR_THEME, 0)
+        val themeIndex = getPreferences(context).getInt(KEY_SELECTED_APP_COLOR_THEME, 0)
+        Log.d("ThemeDebug", "SharedPreferencesManager - Renk teması alındı: $themeIndex")
+        return themeIndex
     }
 
-    // --- Existing Functions ---
     fun saveLanguage(context: Context, language: String) {
         getPreferences(context).edit().putString(KEY_LANGUAGE, language).apply()
+        Log.d("ThemeDebug", "SharedPreferencesManager - Dil kaydedildi: $language")
     }
 
     fun getLanguage(context: Context): String? {
-        return getPreferences(context).getString(KEY_LANGUAGE, null)
+        val language = getPreferences(context).getString(KEY_LANGUAGE, null)
+        Log.d("ThemeDebug", "SharedPreferencesManager - Dil alındı: $language")
+        return language
     }
 
     fun setLanguageSelected(context: Context, selected: Boolean) {
         getPreferences(context).edit().putBoolean(KEY_LANGUAGE_SELECTED_FLAG, selected).apply()
+        Log.d("ThemeDebug", "SharedPreferencesManager - Dil seçildi: $selected")
     }
 
     fun isLanguageSelected(context: Context): Boolean {
-        return getPreferences(context).getBoolean(KEY_LANGUAGE_SELECTED_FLAG, false)
+        val selected = getPreferences(context).getBoolean(KEY_LANGUAGE_SELECTED_FLAG, false)
+        Log.d("ThemeDebug", "SharedPreferencesManager - Dil seçildi alındı: $selected")
+        return selected
     }
 
     fun setHapticFeedbackEnabled(context: Context, enabled: Boolean) {
         getPreferences(context).edit().putBoolean(KEY_HAPTIC_FEEDBACK, enabled).apply()
+        Log.d("ThemeDebug", "SharedPreferencesManager - Haptik geri bildirim: $enabled")
     }
 
     fun isHapticFeedbackEnabled(context: Context): Boolean {
-        return getPreferences(context).getBoolean(KEY_HAPTIC_FEEDBACK, true)
+        val enabled = getPreferences(context).getBoolean(KEY_HAPTIC_FEEDBACK, true)
+        Log.d("ThemeDebug", "SharedPreferencesManager - Haptik geri bildirim alındı: $enabled")
+        return enabled
     }
+
     fun setTouchSoundEnabled(context: Context, enabled: Boolean) {
         getPreferences(context).edit().putBoolean(KEY_TOUCH_SOUND, enabled).apply()
+        Log.d("ThemeDebug", "SharedPreferencesManager - Dokunma sesi: $enabled")
     }
 
     fun isTouchSoundEnabled(context: Context): Boolean {
-        return getPreferences(context).getBoolean(KEY_TOUCH_SOUND, true)
+        val enabled = getPreferences(context).getBoolean(KEY_TOUCH_SOUND, true)
+        Log.d("ThemeDebug", "SharedPreferencesManager - Dokunma sesi alındı: $enabled")
+        return enabled
     }
 
     fun saveTheme(context: Context, themeValue: Int) {
         getPreferences(context).edit().putInt(KEY_THEME, themeValue).apply()
+        Log.d("ThemeDebug", "SharedPreferencesManager - Tema kaydedildi: $themeValue")
     }
 
     fun getTheme(context: Context): Int {
-        return getPreferences(context).getInt(KEY_THEME, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+        val theme = getPreferences(context).getInt(KEY_THEME, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+        Log.d("ThemeDebug", "SharedPreferencesManager - Tema alındı: $theme")
+        return theme
     }
 }
