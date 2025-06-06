@@ -38,7 +38,8 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.android.material.appbar.MaterialToolbar
 import java.io.IOException
 import java.io.FileNotFoundException
-import androidx.appcompat.app.AppCompatDelegate // Import eklendi
+import androidx.appcompat.app.AppCompatDelegate
+import android.util.TypedValue
 
 
 class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorListener, OnPageErrorListener {
@@ -190,6 +191,10 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
             UIFeedbackHelper.provideFeedback(it)
         }
 
+        // Corrected usage of DrawingView.DrawingMode
+        drawingView.drawingMode = DrawingView.DrawingMode.NONE
+        setDrawingButtonState(false)
+
         fabToggleDrawing.setOnClickListener {
             UIFeedbackHelper.provideFeedback(it)
             toggleDrawingMode()
@@ -205,10 +210,6 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
             drawingView.clearDrawing()
             showSnackbar(getString(R.string.all_drawings_cleared_toast))
         }
-
-
-        drawingView.drawingMode = DrawingView.DrawingMode.NONE
-        setDrawingButtonState(false)
 
         setupDrawingOptions()
     }
@@ -389,6 +390,7 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
             clearAllButtonContainer.visibility = View.GONE
             showSnackbar(getString(R.string.drawing_mode_off_toast))
         } else {
+            // Corrected usage of DrawingView.DrawingMode
             drawingView.drawingMode = DrawingView.DrawingMode.ERASER
             isDrawingActive = true
             drawingView.setBrushSize(currentEraserSize)
@@ -409,8 +411,15 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
     }
 
     private fun setDrawingButtonState(active: Boolean) {
-        val activeColor = ContextCompat.getColorStateList(this, R.color.serene_text_light)
-        val inactiveColor = ContextCompat.getColorStateList(this, R.color.serene_teal_accent)
+        val typedValue = TypedValue()
+
+        // Get colorPrimaryDynamic for active state
+        theme.resolveAttribute(R.attr.colorPrimaryDynamic, typedValue, true)
+        val activeColor = ColorStateList.valueOf(typedValue.data)
+
+        // Get colorAccentDynamic for inactive state
+        theme.resolveAttribute(R.attr.colorAccentDynamic, typedValue, true)
+        val inactiveColor = ColorStateList.valueOf(typedValue.data)
 
         if (active) {
             if (drawingView.drawingMode == DrawingView.DrawingMode.PEN) {
@@ -497,7 +506,8 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
                         }
 
                     } catch (e: Exception) {
-                        textViewAnswer.text = getString(R.string.ai_chat_error) + "\n\n" + e.localizedMessage
+                        // Use string resource with placeholder for error message
+                        textViewAnswer.text = getString(R.string.ai_chat_error_with_details, e.localizedMessage ?: "Unknown error")
                         Log.e("GeminiError", "AI Hatası: ", e)
                     } finally {
                         progressChat.visibility = View.GONE
@@ -543,11 +553,13 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
                 }
             } catch (e: IOException) {
                 withContext(Dispatchers.Main) {
+                    // Use string resource with placeholder
                     showSnackbar(getString(R.string.pdf_text_extraction_failed, e.localizedMessage ?: "Dosya okuma hatası"))
                     Log.e("PdfTextExtraction", "Metin çıkarılırken IO hatası: $assetName", e)
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
+                    // Use string resource with placeholder
                     showSnackbar(getString(R.string.pdf_text_extraction_failed, e.localizedMessage ?: "Bilinmeyen hata"))
                     Log.e("PdfTextExtraction", "Metin çıkarılırken genel hata: ${e.localizedMessage}", e)
                 }
@@ -567,12 +579,14 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
 
     override fun onError(t: Throwable?) {
         progressBar.visibility = View.GONE
+        // Use string resource with placeholder
         showSnackbar(getString(R.string.error_toast, t?.localizedMessage ?: "Bilinmeyen PDF hatası"))
         Log.e("PdfView_onError", "PDF Yükleme Hatası", t)
         finish()
     }
 
     override fun onPageError(page: Int, t: Throwable?) {
+        // Use string resource with placeholder
         showSnackbar(getString(R.string.page_load_error_toast, page, t?.localizedMessage ?: "Bilinmeyen sayfa hatası"))
         Log.e("PdfView_onPageError", "Sayfa Yükleme Hatası: $page", t)
     }
@@ -590,6 +604,9 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
     }
 }
 
+// DrawingModeType is defined here, outside the PdfViewActivity class if it's meant to be globally accessible
+// Or, if it's strictly for PdfViewActivity, it should be inside a companion object or directly inside PdfViewActivity.
+// Given its usage across the class, it's fine outside like this, or inside a companion object.
 enum class DrawingModeType {
     SMALL, MEDIUM, LARGE
 }

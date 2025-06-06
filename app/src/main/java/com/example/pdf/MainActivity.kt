@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
 import java.util.Calendar
 import java.util.Locale
+import android.util.TypedValue
 
 class MainActivity : AppCompatActivity() {
 
@@ -55,6 +56,7 @@ class MainActivity : AppCompatActivity() {
         UIFeedbackHelper.init(this)
         setContentView(R.layout.activity_main)
 
+        // Ensure these IDs exist in activity_main.xml
         val toolbar: MaterialToolbar = findViewById(R.id.topToolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.title = getGreetingMessage(this)
@@ -102,8 +104,11 @@ class MainActivity : AppCompatActivity() {
         val settingsItem = menu?.findItem(R.id.action_settings)
         settingsItem?.icon?.let { icon ->
             val newIcon = icon.mutate()
-            val goldColor = ContextCompat.getColor(this, R.color.gold_accent)
-            newIcon.setTint(goldColor)
+            val typedValue = TypedValue()
+            // Using com.google.android.material.R.attr.colorPrimary to reference Material Design attributes.
+            theme.resolveAttribute(com.google.android.material.R.attr.colorPrimary, typedValue, true)
+            val settingsIconColor = typedValue.data
+            newIcon.setTint(settingsIconColor)
             settingsItem.icon = newIcon
         }
         return true

@@ -237,4 +237,5 @@
     <string name="theme_color_pink">Pembe</string>
     <string name="theme_color_brown">Kahverengi</string>
     <string name="theme_color_unknown">Bilinmeyen Renk</string>
+    <string name="ai_chat_error_with_details">Üzgünüm, bir hata oluştu: %1$s</string>
 </resources>

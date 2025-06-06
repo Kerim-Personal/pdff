@@ -236,4 +236,5 @@
     <string name="theme_color_pink">Pink</string>
     <string name="theme_color_brown">Brown</string>
     <string name="theme_color_unknown">Unknown Color</string>
+    <string name="ai_chat_error_with_details">Sorry, an error occurred: %1$s</string>
 </resources>
