@@ -25,7 +25,7 @@ class NameEntryActivity : AppCompatActivity() {
                 startActivity(intent)
                 finish()
             } else {
-                Toast.makeText(this, "Lütfen geçerli bir ad girin.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.enter_valid_name_toast), Toast.LENGTH_SHORT).show()
             }
         }
     }

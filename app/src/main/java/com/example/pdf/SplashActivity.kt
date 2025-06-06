@@ -1,6 +1,7 @@
 package com.example.pdf
 
 import android.annotation.SuppressLint
+import android.content.Context // Context importunu ekleyin
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -12,6 +13,11 @@ import androidx.core.content.ContextCompat
 class SplashActivity : AppCompatActivity() {
 
     private val SPLASH_TIMEOUT: Long = 2000 // 2 seconds
+
+    // attachBaseContext metodunu override ederek dil ayarını erken uygulayın
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(LocaleHelper.onAttach(newBase))
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

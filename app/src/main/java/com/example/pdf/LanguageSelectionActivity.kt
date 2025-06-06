@@ -20,10 +20,12 @@ class LanguageSelectionActivity : AppCompatActivity() {
         val layoutEnglish: LinearLayout = findViewById(R.id.layoutEnglish)
 
         layoutTurkish.setOnClickListener {
+            UIFeedbackHelper.provideFeedback(it)
             setLanguageAndProceed("tr")
         }
 
         layoutEnglish.setOnClickListener {
+            UIFeedbackHelper.provideFeedback(it)
             setLanguageAndProceed("en")
         }
     }
@@ -42,6 +44,8 @@ class LanguageSelectionActivity : AppCompatActivity() {
             intent = Intent(this, MainActivity::class.java)
         }
 
+        // ÖNEMLİ: Buradaki intent flag'lerini yeniden gözden geçiriyoruz.
+        // Eski, daha stabil olan FLAG_ACTIVITY_NEW_TASK ve FLAG_ACTIVITY_CLEAR_TASK bayrakları kalmalı.
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         finish() // LanguageSelectionActivity'yi kapat

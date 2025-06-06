@@ -84,7 +84,7 @@ class SettingsActivity : AppCompatActivity() {
             .setSingleChoiceItems(themes, checkedItem) { _, which ->
                 checkedItem = which
             }
-            .setPositiveButton("OK") { dialog, _ ->
+            .setPositiveButton(getString(android.R.string.ok)) { dialog, _ -> // Burası güncellendi
                 val selectedTheme = when (checkedItem) {
                     0 -> AppCompatDelegate.MODE_NIGHT_NO
                     1 -> AppCompatDelegate.MODE_NIGHT_YES
@@ -94,7 +94,7 @@ class SettingsActivity : AppCompatActivity() {
                 AppCompatDelegate.setDefaultNightMode(selectedTheme)
                 dialog.dismiss()
             }
-            .setNegativeButton("Cancel") { dialog, _ ->
+            .setNegativeButton(getString(android.R.string.cancel)) { dialog, _ -> // Burası güncellendi
                 dialog.dismiss()
             }
             .create()
