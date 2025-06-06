@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">MathLabs</string>
     <string name="expand_arrow_description">Genişletme veya daraltma oku</string>
@@ -38,8 +39,6 @@
     <string name="greeting_good_day">İyi günler, %1$s</string>
     <string name="greeting_good_evening">İyi akşamlar, %1$s</string>
     <string name="greeting_good_night">İyi geceler, %1$s</string>
-
-
 
     <string name="course_calculus">Kalkülüs</string>
     <string name="course_complex_analysis">Kompleks Analiz</string>
@@ -200,4 +199,30 @@
     <string name="ai_chat_error">Üzgünüm, bir hata oluştu. Lütfen tekrar deneyin.</string>
     <string name="ai_chat_info">Cevaplar bu PDF içeriğine göre üretilmektedir.</string>
     <string name="send_question_desc">Soruyu gönder</string>
+
+    <string name="reading_mode_description">Okuma Modu</string>
+    <string name="toggle_drawing_description">Çizimi Aç/Kapat</string>
+    <string name="eraser_description">Silgi</string>
+    <string name="reading_mode_off_toast">Okuma Modu: Kapalı</string>
+    <string name="reading_mode_low_toast">Okuma Modu: Düşük</string>
+    <string name="reading_mode_medium_toast">Okuma Modu: Orta</string>
+    <string name="reading_mode_high_toast">Okuma Modu: Yüksek</string>
+    <string name="drawing_mode_off_toast">Çizim Modu: Kapalı</string>
+    <string name="drawing_mode_pencil_toast">Çizim Modu: Kalem</string>
+    <string name="drawing_mode_eraser_toast">Çizim Modu: Silgi</string>
+    <string name="all_drawings_cleared_toast">Tüm çizimler silindi!</string>
+    <string name="color_red_description">Kırmızı renk</string>
+    <string name="color_blue_description">Mavi renk</string>
+    <string name="color_black_description">Siyah renk</string>
+    <string name="size_small_description">Küçük boyut</string>
+    <string name="size_medium_description">Orta boyut</string>
+    <string name="size_large_description">Büyük boyut</string>
+
+    <string name="ai_assistant_api_key_not_configured">AI Asistanı için API anahtarı yapılandırılmamış.</string>
+    <string name="ai_feature_api_key_not_set">AI özelliği için API anahtarı ayarlanmamış.</string>
+    <string name="pdf_text_not_ready">PDF metni henüz hazır değil, lütfen bekleyin.</string>
+    <string name="please_enter_a_question">Lütfen bir soru girin.</string>
+    <string name="pdf_load_failed_with_error">PDF yüklenemedi: %1$s</string>
+    <string name="pdf_text_extraction_failed">PDF metni çıkarılırken hata: %1$s</string>
+    <string name="pdf_text_blank_or_empty">PDF\'ten metin çıkarılamadı veya PDF boş.</string>
 </resources>

@@ -3,6 +3,7 @@ package com.example.pdf
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatDelegate
+import android.graphics.Color // Needed for default color constant
 
 object SharedPreferencesManager {
 
@@ -12,13 +13,16 @@ object SharedPreferencesManager {
     private const val KEY_HAPTIC_FEEDBACK = "haptic_feedback_enabled"
     private const val KEY_TOUCH_SOUND = "touch_sound_enabled"
     private const val KEY_THEME = "theme_preference"
-    private const val KEY_USER_NAME = "user_name" // YENİ EKLENDİ: Kullanıcı adı için anahtar
+    private const val KEY_USER_NAME = "user_name"
+    private const val KEY_PEN_COLOR = "pen_color" // NEW: Pen color key
+    private const val KEY_PEN_SIZE_TYPE = "pen_size_type" // NEW: Pen size type key
+    private const val KEY_ERASER_SIZE_TYPE = "eraser_size_type" // NEW: Eraser size type key
+
 
     private fun getPreferences(context: Context): SharedPreferences {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
     }
 
-    // YENİ FONKSİYONLAR EKLENDİ: Kullanıcı adını kaydetme ve okuma
     fun saveUserName(context: Context, name: String) {
         getPreferences(context).edit().putString(KEY_USER_NAME, name).apply()
     }
@@ -27,7 +31,36 @@ object SharedPreferencesManager {
         return getPreferences(context).getString(KEY_USER_NAME, null)
     }
 
-    // --- Mevcut Fonksiyonlar ---
+    // NEW FUNCTIONS for Drawing preferences
+    fun savePenColor(context: Context, color: Int) {
+        getPreferences(context).edit().putInt(KEY_PEN_COLOR, color).apply()
+    }
+
+    fun getPenColor(context: Context): Int {
+        // Default to red if no color is saved, using the ARGB value directly
+        // Make sure R.color.red is defined in colors.xml or use a direct hex color:
+        return getPreferences(context).getInt(KEY_PEN_COLOR, Color.RED)
+    }
+
+    fun savePenSizeType(context: Context, sizeTypeOrdinal: Int) {
+        getPreferences(context).edit().putInt(KEY_PEN_SIZE_TYPE, sizeTypeOrdinal).apply()
+    }
+
+    fun getPenSizeType(context: Context): Int {
+        // Default to medium size type (ordinal 1, assuming SMALL=0, MEDIUM=1, LARGE=2)
+        return getPreferences(context).getInt(KEY_PEN_SIZE_TYPE, DrawingModeType.MEDIUM.ordinal)
+    }
+
+    fun saveEraserSizeType(context: Context, sizeTypeOrdinal: Int) {
+        getPreferences(context).edit().putInt(KEY_ERASER_SIZE_TYPE, sizeTypeOrdinal).apply()
+    }
+
+    fun getEraserSizeType(context: Context): Int {
+        // Default to medium size type (ordinal 1)
+        return getPreferences(context).getInt(KEY_ERASER_SIZE_TYPE, DrawingModeType.MEDIUM.ordinal)
+    }
+
+    // --- Existing Functions ---
     fun saveLanguage(context: Context, language: String) {
         getPreferences(context).edit().putString(KEY_LANGUAGE, language).apply()
     }
