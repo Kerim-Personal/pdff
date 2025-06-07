@@ -2,18 +2,21 @@ package com.example.pdf
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.view.View
+import android.view.WindowInsets
+import android.view.WindowInsetsController
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.textfield.TextInputEditText
 import androidx.appcompat.app.AppCompatDelegate
+import com.google.android.material.textfield.TextInputEditText
 
 class NameEntryActivity : AppCompatActivity() {
 
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(LocaleHelper.onAttach(newBase))
-        // applyThemeAndColor() çağrısı buradan kaldırıldı. onCreate metoduna taşındı.
     }
 
     private fun applyThemeAndColor() {
@@ -37,8 +40,24 @@ class NameEntryActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        applyThemeAndColor() // Temayı ayarlayan metod buraya taşındı.
+        applyThemeAndColor()
         super.onCreate(savedInstanceState)
+
+        // Durum çubuğunu gizleme
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            window.setDecorFitsSystemWindows(false)
+            window.insetsController?.let {
+                it.hide(WindowInsets.Type.statusBars() or WindowInsets.Type.navigationBars())
+                it.systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            }
+        } else {
+            @Suppress("DEPRECATION")
+            window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                    or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    or View.SYSTEM_UI_FLAG_FULLSCREEN)
+        }
+
         setContentView(R.layout.activity_name_entry)
 
         val editTextName: TextInputEditText = findViewById(R.id.editTextName)
