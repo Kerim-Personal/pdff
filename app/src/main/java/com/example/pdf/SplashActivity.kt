@@ -24,7 +24,24 @@ class SplashActivity : AppCompatActivity() {
         startTypingAnimation()
 
         handler.postDelayed({
-            startActivity(Intent(this, MainActivity::class.java))
+            val intent: Intent
+            // Kullanıcının daha önce bir dil seçip seçmediğini kontrol et
+            if (!SharedPreferencesManager.isLanguageSelected(this)) {
+                // Dil seçilmemişse, dil seçim ekranına yönlendir
+                intent = Intent(this, LanguageSelectionActivity::class.java)
+            } else {
+                // Dil seçilmişse, kullanıcı adının olup olmadığını kontrol et
+                if (SharedPreferencesManager.getUserName(this) == null) {
+                    // Kullanıcı adı yoksa, isim giriş ekranına yönlendir
+                    intent = Intent(this, NameEntryActivity::class.java)
+                } else {
+                    // Hem dil seçilmiş hem de kullanıcı adı varsa, ana ekrana yönlendir
+                    intent = Intent(this, MainActivity::class.java)
+                }
+            }
+            // Yeni aktiviteyi başlat ve splash ekranını kapat (önceki aktiviteleri temizle)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
             finish()
         }, 2500)
     }
@@ -51,6 +68,7 @@ class SplashActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        // Aktivite yok edildiğinde handler'daki bekleyen işlemleri iptal et
         handler.removeCallbacksAndMessages(null)
     }
 }

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -46,32 +47,42 @@ class MainActivity : AppCompatActivity() {
 
     private fun applyThemeAndColor() {
         val selectedColorThemeIndex = SharedPreferencesManager.getAppColorTheme(this)
-        val currentNightMode = SharedPreferencesManager.getTheme(this)
+        val savedThemeMode = SharedPreferencesManager.getTheme(this)
+
+        // Cihazın gerçekte karanlık modda olup olmadığını belirle
+        val isNightMode = when (savedThemeMode) {
+            AppCompatDelegate.MODE_NIGHT_YES -> true
+            AppCompatDelegate.MODE_NIGHT_NO -> false
+            else -> { // MODE_NIGHT_FOLLOW_SYSTEM durumu
+                val currentNightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+                currentNightMode == Configuration.UI_MODE_NIGHT_YES
+            }
+        }
 
         val themeResId = when (selectedColorThemeIndex) {
-            0 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_SereneBlue_Dark else R.style.Theme_Pdf_SereneBlue_Light
-            1 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_Red_Dark else R.style.Theme_Pdf_Red_Light
-            2 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_Green_Dark else R.style.Theme_Pdf_Green_Light
-            3 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_Purple_Dark else R.style.Theme_Pdf_Purple_Light
-            4 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_Orange_Dark else R.style.Theme_Pdf_Orange_Light
-            5 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_DeepPurple_Dark else R.style.Theme_Pdf_DeepPurple_Light
-            6 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_Indigo_Dark else R.style.Theme_Pdf_Indigo_Light
-            7 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_Cyan_Dark else R.style.Theme_Pdf_Cyan_Light
-            8 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_Pink_Dark else R.style.Theme_Pdf_Pink_Light
-            9 -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_Brown_Dark else R.style.Theme_Pdf_Brown_Light
-            else -> if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) R.style.Theme_Pdf_SereneBlue_Dark else R.style.Theme_Pdf_SereneBlue_Light
+            0 -> if (isNightMode) R.style.Theme_Pdf_SereneBlue_Dark else R.style.Theme_Pdf_SereneBlue_Light
+            1 -> if (isNightMode) R.style.Theme_Pdf_Red_Dark else R.style.Theme_Pdf_Red_Light
+            2 -> if (isNightMode) R.style.Theme_Pdf_Green_Dark else R.style.Theme_Pdf_Green_Light
+            3 -> if (isNightMode) R.style.Theme_Pdf_Purple_Dark else R.style.Theme_Pdf_Purple_Light
+            4 -> if (isNightMode) R.style.Theme_Pdf_Orange_Dark else R.style.Theme_Pdf_Orange_Light
+            5 -> if (isNightMode) R.style.Theme_Pdf_DeepPurple_Dark else R.style.Theme_Pdf_DeepPurple_Light
+            6 -> if (isNightMode) R.style.Theme_Pdf_Indigo_Dark else R.style.Theme_Pdf_Indigo_Light
+            7 -> if (isNightMode) R.style.Theme_Pdf_Cyan_Dark else R.style.Theme_Pdf_Cyan_Light
+            8 -> if (isNightMode) R.style.Theme_Pdf_Pink_Dark else R.style.Theme_Pdf_Pink_Light
+            9 -> if (isNightMode) R.style.Theme_Pdf_Brown_Dark else R.style.Theme_Pdf_Brown_Light
+            else -> if (isNightMode) R.style.Theme_Pdf_SereneBlue_Dark else R.style.Theme_Pdf_SereneBlue_Light
         }
         setTheme(themeResId)
-        Log.d("ThemeDebug", "MainActivity - Tema uygulandı: ${resources.getResourceEntryName(themeResId)}, Gece Modu: $currentNightMode, Renk Teması: $selectedColorThemeIndex")
+        Log.d("ThemeDebug", "MainActivity - Tema uygulandı: ${resources.getResourceEntryName(themeResId)}, Gece Modu: $isNightMode, Renk Teması: $selectedColorThemeIndex")
     }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d("ThemeDebug", "MainActivity - onCreate çağrıldı.")
         applyThemeAndColor()
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main) // Moved this line here
+        setContentView(R.layout.activity_main)
 
-        // Durum çubuğunu gizleme
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             window.setDecorFitsSystemWindows(false)
             window.insetsController?.let {
@@ -86,7 +97,6 @@ class MainActivity : AppCompatActivity() {
                     or View.SYSTEM_UI_FLAG_FULLSCREEN)
         }
 
-
         val toolbar: MaterialToolbar = findViewById(R.id.topToolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.title = getGreetingMessage(this)
@@ -98,10 +108,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        applyThemeAndColor()
-        courseAdapter.notifyDataSetChanged()
-        invalidateOptionsMenu() // Menü ikonlarını yenile
-        Log.d("ThemeDebug", "MainActivity - onStart: Tema yeniden uygulandı.")
+        invalidateOptionsMenu() // Menü ikonlarını (örneğin ayarlar ikonu) yeniden çizmek için
     }
 
     private fun getGreetingMessage(context: Context): String {
