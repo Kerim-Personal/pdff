@@ -131,11 +131,9 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
     override fun onCreate(savedInstanceState: Bundle?) {
         applyThemeAndColor()
         super.onCreate(savedInstanceState)
-        UIFeedbackHelper.init(this)
         window.setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE)
         setContentView(R.layout.activity_pdf_view)
 
-        // Durum çubuğunu gizleme
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             window.setDecorFitsSystemWindows(false)
             window.insetsController?.let {
@@ -172,7 +170,7 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
         fabEraser = findViewById(R.id.fab_eraser)
         drawingOptionsPanel = findViewById(R.id.drawingControlsCard)
         colorOptions = findViewById(R.id.colorOptions)
-        sizeOptions = findViewById(R.id.sizeOptions) // Hata düzeltildi
+        sizeOptions = findViewById(R.id.sizeOptions)
         clearAllButtonContainer = findViewById(R.id.clearAllButtonContainer)
 
         btnColorRed = findViewById(R.id.btn_color_red)
@@ -184,7 +182,6 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
         btnSizeLarge = findViewById(R.id.btn_size_large)
 
         fabClearAll = findViewById(R.id.fab_clear_all)
-
 
         if (pdfAssetName != null) {
             displayPdfFromAssets(pdfAssetName!!)
@@ -200,20 +197,13 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
                 return@setOnClickListener
             }
 
-            // 24 saatlik kısıtlama kontrolü tamamen kaldırılmıştır.
-            // Bu satırlar ve altındaki 'if' bloğu kaldırılmıştır.
-
             val isFirstCall = SharedPreferencesManager.getIsFirstGeminiApiCall(this)
             val currentTime = System.currentTimeMillis()
 
             showAiChatDialog()
-            // İlk çağrıdan sonra bayrağı false yap
             if (isFirstCall) {
                 SharedPreferencesManager.setIsFirstGeminiApiCall(this, false)
             }
-            // Başarılı dialog gösteriminden sonra zaman damgasını güncelle
-            // Bu satır teknik olarak rate limit kaldırılınca gereksizleşse de,
-            // gelecekte tekrar etkinleştirilirse doğru çalışması için tutulabilir.
             SharedPreferencesManager.saveLastGeminiApiCallTimestamp(this, currentTime)
         }
 
@@ -244,9 +234,10 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
         setupDrawingOptions()
     }
 
+    // ONDESTROY METODU GÜNCELLENDİ
     override fun onDestroy() {
         super.onDestroy()
-        UIFeedbackHelper.release()
+        // UIFeedbackHelper.release() satırı buradan kaldırıldı.
     }
 
     private fun setupDrawingOptions() {
@@ -508,8 +499,8 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
         buttonSend.setOnClickListener {
             val question = editTextQuestion.text.toString().trim()
             if (question.isNotEmpty()) {
-                textViewAnswer.text = "" // Önceki cevabı temizle
-                textViewAnswer.visibility = View.GONE // İlerleme çubuğu gösterilirken gizle
+                textViewAnswer.text = ""
+                textViewAnswer.visibility = View.GONE
                 progressChat.visibility = View.VISIBLE
                 buttonSend.isEnabled = false
                 editTextQuestion.isEnabled = false
@@ -526,7 +517,6 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
 
                         val responseFlow = generativeModel.generateContentStream(prompt)
                             .catch { e ->
-                                // API çağrısı sırasında oluşan hataları yakala ve logla
                                 Log.e("GeminiError", "API çağrısı hatası: ${e.localizedMessage}", e)
                                 withContext(Dispatchers.Main) {
                                     textViewAnswer.text = getString(R.string.ai_chat_error_with_details, e.localizedMessage ?: "Unknown error")
@@ -540,22 +530,21 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
 
                         val stringBuilder = StringBuilder()
                         responseFlow.collect { chunk ->
-                            Log.d("GeminiResponse", "Received chunk: ${chunk.text}") // Hata ayıklama için eklendi
-                            if (stringBuilder.length < 100) { // Sadece 100 karakterden azsa ekle
+                            Log.d("GeminiResponse", "Received chunk: ${chunk.text}")
+                            if (stringBuilder.length < 100) {
                                 stringBuilder.append(chunk.text)
-                                if (stringBuilder.length > 100) { // Fazla olan karakteri kırp
+                                if (stringBuilder.length > 100) {
                                     stringBuilder.setLength(100)
                                 }
                             }
                         }
                         textViewAnswer.text = stringBuilder.toString()
-                        textViewAnswer.visibility = View.VISIBLE // Yanıt geldiğinde görünür yap
+                        textViewAnswer.visibility = View.VISIBLE
 
                     } catch (e: Exception) {
-                        // try-catch bloğu hala genel hataları yakalayabilir
                         textViewAnswer.text = getString(R.string.ai_chat_error_with_details, e.localizedMessage ?: "Unknown error")
                         Log.e("GeminiError", "AI Hatası (genel yakalama): ", e)
-                        textViewAnswer.visibility = View.VISIBLE // Hata durumunda da görünür yap
+                        textViewAnswer.visibility = View.VISIBLE
                     } finally {
                         progressChat.visibility = View.GONE
                         buttonSend.isEnabled = true

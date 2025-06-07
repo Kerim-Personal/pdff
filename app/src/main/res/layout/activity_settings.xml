@@ -122,12 +122,4 @@
         android:textSize="18sp"
         android:paddingVertical="12dp"/>
 
-    <com.google.android.material.switchmaterial.SwitchMaterial
-        android:id="@+id/switchHapticFeedback"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/haptic_feedback"
-        android:textSize="18sp"
-        android:paddingVertical="12dp"/>
-
 </LinearLayout>

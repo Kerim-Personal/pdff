@@ -19,11 +19,8 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun applyGlobalThemeAndColor() {
-        // Uygulama genelindeki tema modunu ayarla
         val theme = SharedPreferencesManager.getTheme(this)
         AppCompatDelegate.setDefaultNightMode(theme)
-
-        // Merkezi tema yöneticisinden doğru temayı al ve uygula
         setTheme(ThemeManager.getThemeResId(this))
         Log.d("ThemeDebug", "SettingsActivity - Tema uygulandı. Gece Modu: $theme")
     }
@@ -61,19 +58,13 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun setupSwitches() {
         val switchTouchSound: SwitchMaterial = findViewById(R.id.switchTouchSound)
-        val switchHapticFeedback: SwitchMaterial = findViewById(R.id.switchHapticFeedback)
+        // switchHapticFeedback ile ilgili kodlar kaldırıldı.
 
         switchTouchSound.isChecked = SharedPreferencesManager.isTouchSoundEnabled(this)
-        switchHapticFeedback.isChecked = SharedPreferencesManager.isHapticFeedbackEnabled(this)
 
         switchTouchSound.setOnCheckedChangeListener { buttonView, isChecked ->
             UIFeedbackHelper.provideFeedback(buttonView)
             SharedPreferencesManager.setTouchSoundEnabled(this, isChecked)
-        }
-
-        switchHapticFeedback.setOnCheckedChangeListener { buttonView, isChecked ->
-            UIFeedbackHelper.provideFeedback(buttonView)
-            SharedPreferencesManager.setHapticFeedbackEnabled(this, isChecked)
         }
     }
 

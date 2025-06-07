@@ -47,6 +47,9 @@ class NameEntryActivity : AppCompatActivity() {
         val buttonContinue: Button = findViewById(R.id.buttonContinue)
 
         buttonContinue.setOnClickListener {
+            // Butona tıklandığında geri bildirim ver
+            UIFeedbackHelper.provideFeedback(it)
+
             val name = editTextName.text.toString().trim()
             if (name.isNotEmpty()) {
                 SharedPreferencesManager.saveUserName(this, name)

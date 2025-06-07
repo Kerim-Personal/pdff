@@ -19,7 +19,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SearchView
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager // <-- EKLENEN SATIR
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
 import java.util.Calendar
@@ -49,11 +49,10 @@ class MainActivity : AppCompatActivity() {
         val selectedColorThemeIndex = SharedPreferencesManager.getAppColorTheme(this)
         val savedThemeMode = SharedPreferencesManager.getTheme(this)
 
-        // Cihazın gerçekte karanlık modda olup olmadığını belirle
         val isNightMode = when (savedThemeMode) {
             AppCompatDelegate.MODE_NIGHT_YES -> true
             AppCompatDelegate.MODE_NIGHT_NO -> false
-            else -> { // MODE_NIGHT_FOLLOW_SYSTEM durumu
+            else -> {
                 val currentNightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
                 currentNightMode == Configuration.UI_MODE_NIGHT_YES
             }
@@ -108,7 +107,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        invalidateOptionsMenu() // Menü ikonlarını (örneğin ayarlar ikonu) yeniden çizmek için
+        invalidateOptionsMenu()
     }
 
     private fun getGreetingMessage(context: Context): String {
@@ -127,7 +126,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        UIFeedbackHelper.release()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

@@ -11,7 +11,7 @@ object SharedPreferencesManager {
     private const val PREFS_NAME = "app_prefs"
     private const val KEY_LANGUAGE = "selected_language"
     private const val KEY_LANGUAGE_SELECTED_FLAG = "language_selected_flag"
-    private const val KEY_HAPTIC_FEEDBACK = "haptic_feedback_enabled"
+    // KEY_HAPTIC_FEEDBACK sabiti kaldırıldı.
     private const val KEY_TOUCH_SOUND = "touch_sound_enabled"
     private const val KEY_THEME = "theme_preference"
     private const val KEY_USER_NAME = "user_name"
@@ -20,7 +20,7 @@ object SharedPreferencesManager {
     private const val KEY_ERASER_SIZE_TYPE = "eraser_size_type"
     private const val KEY_SELECTED_APP_COLOR_THEME = "selected_app_color_theme"
     private const val KEY_LAST_GEMINI_API_CALL_TIMESTAMP = "last_gemini_api_call_timestamp"
-    private const val KEY_IS_FIRST_GEMINI_API_CALL = "is_first_gemini_api_call" // Yeni eklendi
+    private const val KEY_IS_FIRST_GEMINI_API_CALL = "is_first_gemini_api_call"
 
     private fun getPreferences(context: Context): SharedPreferences {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -103,16 +103,7 @@ object SharedPreferencesManager {
         return selected
     }
 
-    fun setHapticFeedbackEnabled(context: Context, enabled: Boolean) {
-        getPreferences(context).edit().putBoolean(KEY_HAPTIC_FEEDBACK, enabled).apply()
-        Log.d("ThemeDebug", "SharedPreferencesManager - Haptik geri bildirim: $enabled")
-    }
-
-    fun isHapticFeedbackEnabled(context: Context): Boolean {
-        val enabled = getPreferences(context).getBoolean(KEY_HAPTIC_FEEDBACK, true)
-        Log.d("ThemeDebug", "SharedPreferencesManager - Haptik geri bildirim alındı: $enabled")
-        return enabled
-    }
+    // setHapticFeedbackEnabled ve isHapticFeedbackEnabled fonksiyonları kaldırıldı.
 
     fun setTouchSoundEnabled(context: Context, enabled: Boolean) {
         getPreferences(context).edit().putBoolean(KEY_TOUCH_SOUND, enabled).apply()
@@ -136,7 +127,6 @@ object SharedPreferencesManager {
         return theme
     }
 
-    // Gemini API kullanımı için yeni fonksiyonlar
     fun saveLastGeminiApiCallTimestamp(context: Context, timestamp: Long) {
         getPreferences(context).edit().putLong(KEY_LAST_GEMINI_API_CALL_TIMESTAMP, timestamp).apply()
         Log.d("GeminiApiUsage", "Last Gemini API call timestamp saved: $timestamp")
