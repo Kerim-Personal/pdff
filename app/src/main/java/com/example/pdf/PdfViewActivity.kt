@@ -28,6 +28,7 @@ import com.tom_roush.pdfbox.android.PDFBoxResourceLoader
 import com.tom_roush.pdfbox.pdmodel.PDDocument
 import com.tom_roush.pdfbox.text.PDFTextStripper
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.catch // catch operatörünü import et
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -43,7 +44,8 @@ import android.util.TypedValue
 import android.view.WindowInsets
 import android.view.WindowInsetsController
 import android.os.Build
-import com.google.android.material.card.MaterialCardView // Import MaterialCardView
+import com.google.android.material.card.MaterialCardView
+import java.util.concurrent.TimeUnit
 
 class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorListener, OnPageErrorListener {
 
@@ -59,7 +61,7 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
     private lateinit var drawingView: DrawingView
     private lateinit var fabToggleDrawing: FloatingActionButton
     private lateinit var fabEraser: FloatingActionButton
-    private lateinit var drawingOptionsPanel: MaterialCardView // Changed from LinearLayout to MaterialCardView
+    private lateinit var drawingOptionsPanel: MaterialCardView
     private lateinit var colorOptions: LinearLayout
     private lateinit var sizeOptions: LinearLayout
     private lateinit var clearAllButtonContainer: LinearLayout
@@ -99,11 +101,11 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
     companion object {
         const val EXTRA_PDF_ASSET_NAME = "pdf_asset_name"
         const val EXTRA_PDF_TITLE = "pdf_title"
+        private const val GEMINI_API_CALL_INTERVAL_MILLIS = 24 * 60 * 60 * 1000L // 24 hours in milliseconds
     }
 
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(LocaleHelper.onAttach(newBase))
-        // applyThemeAndColor() çağrısı buradan kaldırıldı. onCreate metoduna taşındı.
     }
 
     private fun applyThemeAndColor() {
@@ -168,9 +170,9 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
         drawingView = findViewById(R.id.drawingView)
         fabToggleDrawing = findViewById(R.id.fab_toggle_drawing)
         fabEraser = findViewById(R.id.fab_eraser)
-        drawingOptionsPanel = findViewById(R.id.drawingControlsCard) // Corrected from LinearLayout to MaterialCardView
+        drawingOptionsPanel = findViewById(R.id.drawingControlsCard)
         colorOptions = findViewById(R.id.colorOptions)
-        sizeOptions = findViewById(R.id.sizeOptions)
+        sizeOptions = findViewById(R.id.sizeOptions) // Hata düzeltildi
         clearAllButtonContainer = findViewById(R.id.clearAllButtonContainer)
 
         btnColorRed = findViewById(R.id.btn_color_red)
@@ -194,14 +196,25 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
         fabAiChat.setOnClickListener {
             val apiKey = BuildConfig.GEMINI_API_KEY
             if (apiKey.isEmpty()) {
-                showSnackbar(getString(R.string.ai_feature_api_key_not_set))
+                showSnackbar(getString(R.string.ai_assistant_api_key_not_configured))
                 return@setOnClickListener
             }
-            if (fullPdfText != null) {
-                showAiChatDialog()
-            } else {
-                showSnackbar(getString(R.string.pdf_text_not_ready))
+
+            // 24 saatlik kısıtlama kontrolü tamamen kaldırılmıştır.
+            // Bu satırlar ve altındaki 'if' bloğu kaldırılmıştır.
+
+            val isFirstCall = SharedPreferencesManager.getIsFirstGeminiApiCall(this)
+            val currentTime = System.currentTimeMillis()
+
+            showAiChatDialog()
+            // İlk çağrıdan sonra bayrağı false yap
+            if (isFirstCall) {
+                SharedPreferencesManager.setIsFirstGeminiApiCall(this, false)
             }
+            // Başarılı dialog gösteriminden sonra zaman damgasını güncelle
+            // Bu satır teknik olarak rate limit kaldırılınca gereksizleşse de,
+            // gelecekte tekrar etkinleştirilirse doğru çalışması için tutulabilir.
+            SharedPreferencesManager.saveLastGeminiApiCallTimestamp(this, currentTime)
         }
 
         fabReadingMode.setOnClickListener {
@@ -209,7 +222,6 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
             UIFeedbackHelper.provideFeedback(it)
         }
 
-        // Corrected usage of DrawingView.DrawingMode
         drawingView.drawingMode = DrawingView.DrawingMode.NONE
         setDrawingButtonState(false)
 
@@ -408,7 +420,6 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
             clearAllButtonContainer.visibility = View.GONE
             showSnackbar(getString(R.string.drawing_mode_off_toast))
         } else {
-            // Corrected usage of DrawingView.DrawingMode
             drawingView.drawingMode = DrawingView.DrawingMode.ERASER
             isDrawingActive = true
             drawingView.setBrushSize(currentEraserSize)
@@ -431,11 +442,9 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
     private fun setDrawingButtonState(active: Boolean) {
         val typedValue = TypedValue()
 
-        // Get colorPrimaryDynamic for active state
         theme.resolveAttribute(R.attr.colorPrimaryDynamic, typedValue, true)
         val activeColor = ColorStateList.valueOf(typedValue.data)
 
-        // Get colorAccentDynamic for inactive state
         theme.resolveAttribute(R.attr.colorAccentDynamic, typedValue, true)
         val inactiveColor = ColorStateList.valueOf(typedValue.data)
 
@@ -499,7 +508,8 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
         buttonSend.setOnClickListener {
             val question = editTextQuestion.text.toString().trim()
             if (question.isNotEmpty()) {
-                textViewAnswer.text = ""
+                textViewAnswer.text = "" // Önceki cevabı temizle
+                textViewAnswer.visibility = View.GONE // İlerleme çubuğu gösterilirken gizle
                 progressChat.visibility = View.VISIBLE
                 buttonSend.isEnabled = false
                 editTextQuestion.isEnabled = false
@@ -507,26 +517,45 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
                 lifecycleScope.launch {
                     try {
                         val prompt = """
-                        SADECE ve SADECE aşağıdaki PDF metnini referans alarak kullanıcının sorusunu yanıtla.
-                        Eğer sorunun cevabı bu metinde kesin olarak bulunmuyorsa, "Bu sorunun cevabı belgede bulunmuyor." şeklinde yanıt ver.
-                        Cevabını Markdown formatında (örneğin, başlıklar için #, alt başlıklar için ##, listeler için * veya - kullanarak) ve Türkçe olarak ver.
+                        Kullanıcının sorusunu genel bilginize dayanarak en fazla 100 karakter uzunluğunda yanıtlayın.
+                        Cevabınızı Markdown formatında (örneğin, başlıklar için #, alt başlıklar için ##, listeler için * veya - kullanarak) ve Türkçe olarak verin.
+                        Sadece net ve öz cevaplar verin, gereksiz detaylardan kaçının. Cevabınız 100 karakteri kesinlikle aşmasın.
 
                         Kullanıcının Sorusu: "$question"
-
-                        PDF Metni:
-                        "$fullPdfText"
                         """.trimIndent()
 
                         val responseFlow = generativeModel.generateContentStream(prompt)
+                            .catch { e ->
+                                // API çağrısı sırasında oluşan hataları yakala ve logla
+                                Log.e("GeminiError", "API çağrısı hatası: ${e.localizedMessage}", e)
+                                withContext(Dispatchers.Main) {
+                                    textViewAnswer.text = getString(R.string.ai_chat_error_with_details, e.localizedMessage ?: "Unknown error")
+                                    textViewAnswer.visibility = View.VISIBLE
+                                    progressChat.visibility = View.GONE
+                                    buttonSend.isEnabled = true
+                                    editTextQuestion.isEnabled = true
+                                }
+                            }
 
+
+                        val stringBuilder = StringBuilder()
                         responseFlow.collect { chunk ->
-                            textViewAnswer.append(chunk.text)
+                            Log.d("GeminiResponse", "Received chunk: ${chunk.text}") // Hata ayıklama için eklendi
+                            if (stringBuilder.length < 100) { // Sadece 100 karakterden azsa ekle
+                                stringBuilder.append(chunk.text)
+                                if (stringBuilder.length > 100) { // Fazla olan karakteri kırp
+                                    stringBuilder.setLength(100)
+                                }
+                            }
                         }
+                        textViewAnswer.text = stringBuilder.toString()
+                        textViewAnswer.visibility = View.VISIBLE // Yanıt geldiğinde görünür yap
 
                     } catch (e: Exception) {
-                        // Use string resource with placeholder for error message
+                        // try-catch bloğu hala genel hataları yakalayabilir
                         textViewAnswer.text = getString(R.string.ai_chat_error_with_details, e.localizedMessage ?: "Unknown error")
-                        Log.e("GeminiError", "AI Hatası: ", e)
+                        Log.e("GeminiError", "AI Hatası (genel yakalama): ", e)
+                        textViewAnswer.visibility = View.VISIBLE // Hata durumunda da görünür yap
                     } finally {
                         progressChat.visibility = View.GONE
                         buttonSend.isEnabled = true
@@ -553,12 +582,10 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
                         withContext(Dispatchers.Main) {
                             fullPdfText = text
                             val apiKey = BuildConfig.GEMINI_API_KEY
-                            if (text.isNotBlank() && apiKey.isNotEmpty()) {
+                            if (apiKey.isNotEmpty()) {
                                 val fadeInAnimation = AnimationUtils.loadAnimation(applicationContext, R.anim.fade_in)
                                 fabAiChat.startAnimation(fadeInAnimation)
                                 fabAiChat.visibility = View.VISIBLE
-                            } else if (text.isBlank()) {
-                                showSnackbar(getString(R.string.pdf_text_blank_or_empty))
                             }
                             Log.d("PdfTextExtraction", "Metin başarıyla çıkarıldı. Karakter sayısı: ${text.length}")
                         }
@@ -571,13 +598,11 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
                 }
             } catch (e: IOException) {
                 withContext(Dispatchers.Main) {
-                    // Use string resource with placeholder
-                    showSnackbar(getString(R.string.pdf_text_extraction_failed, e.localizedMessage ?: "Dosya okuma hatası"))
+                    showSnackbar(getString(R.string.pdf_load_failed_with_error, e.localizedMessage ?: "Dosya okuma hatası"))
                     Log.e("PdfTextExtraction", "Metin çıkarılırken IO hatası: $assetName", e)
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    // Use string resource with placeholder
                     showSnackbar(getString(R.string.pdf_text_extraction_failed, e.localizedMessage ?: "Bilinmeyen hata"))
                     Log.e("PdfTextExtraction", "Metin çıkarılırken genel hata: ${e.localizedMessage}", e)
                 }
@@ -597,14 +622,12 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
 
     override fun onError(t: Throwable?) {
         progressBar.visibility = View.GONE
-        // Use string resource with placeholder
         showSnackbar(getString(R.string.error_toast, t?.localizedMessage ?: "Bilinmeyen PDF hatası"))
         Log.e("PdfView_onError", "PDF Yükleme Hatası", t)
         finish()
     }
 
     override fun onPageError(page: Int, t: Throwable?) {
-        // Use string resource with placeholder
         showSnackbar(getString(R.string.page_load_error_toast, page, t?.localizedMessage ?: "Bilinmeyen sayfa hatası"))
         Log.e("PdfView_onPageError", "Sayfa Yükleme Hatası: $page", t)
     }
@@ -622,9 +645,6 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
     }
 }
 
-// DrawingModeType is defined here, outside the PdfViewActivity class if it's meant to be globally accessible
-// Or, if it's strictly for PdfViewActivity, it should be inside a companion object or directly inside PdfViewActivity.
-// Given its usage across the class, it's fine outside like this, or inside a companion object.
 enum class DrawingModeType {
     SMALL, MEDIUM, LARGE
 }

@@ -19,6 +19,8 @@ object SharedPreferencesManager {
     private const val KEY_PEN_SIZE_TYPE = "pen_size_type"
     private const val KEY_ERASER_SIZE_TYPE = "eraser_size_type"
     private const val KEY_SELECTED_APP_COLOR_THEME = "selected_app_color_theme"
+    private const val KEY_LAST_GEMINI_API_CALL_TIMESTAMP = "last_gemini_api_call_timestamp"
+    private const val KEY_IS_FIRST_GEMINI_API_CALL = "is_first_gemini_api_call" // Yeni eklendi
 
     private fun getPreferences(context: Context): SharedPreferences {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -132,5 +134,28 @@ object SharedPreferencesManager {
         val theme = getPreferences(context).getInt(KEY_THEME, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
         Log.d("ThemeDebug", "SharedPreferencesManager - Tema alındı: $theme")
         return theme
+    }
+
+    // Gemini API kullanımı için yeni fonksiyonlar
+    fun saveLastGeminiApiCallTimestamp(context: Context, timestamp: Long) {
+        getPreferences(context).edit().putLong(KEY_LAST_GEMINI_API_CALL_TIMESTAMP, timestamp).apply()
+        Log.d("GeminiApiUsage", "Last Gemini API call timestamp saved: $timestamp")
+    }
+
+    fun getLastGeminiApiCallTimestamp(context: Context): Long {
+        val timestamp = getPreferences(context).getLong(KEY_LAST_GEMINI_API_CALL_TIMESTAMP, 0L)
+        Log.d("GeminiApiUsage", "Last Gemini API call timestamp retrieved: $timestamp")
+        return timestamp
+    }
+
+    fun setIsFirstGeminiApiCall(context: Context, isFirst: Boolean) {
+        getPreferences(context).edit().putBoolean(KEY_IS_FIRST_GEMINI_API_CALL, isFirst).apply()
+        Log.d("GeminiApiUsage", "isFirstGeminiApiCall set to: $isFirst")
+    }
+
+    fun getIsFirstGeminiApiCall(context: Context): Boolean {
+        val isFirst = getPreferences(context).getBoolean(KEY_IS_FIRST_GEMINI_API_CALL, true)
+        Log.d("GeminiApiUsage", "isFirstGeminiApiCall retrieved: $isFirst")
+        return isFirst
     }
 }
