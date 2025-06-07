@@ -2,7 +2,9 @@ package com.example.pdf
 
 import android.app.Activity
 import android.content.Context
+import android.content.res.Configuration
 import android.util.Log
+import androidx.appcompat.app.AppCompatDelegate
 
 object ThemeManager {
 
@@ -10,6 +12,41 @@ object ThemeManager {
         "Serene Blue", "Red", "Green", "Purple", "Orange",
         "Deep Purple", "Indigo", "Cyan", "Pink", "Brown"
     )
+
+    /**
+     * Uygulamanın mevcut ayarlarına (renk ve aydınlık/karanlık mod) göre
+     * doğru tema kaynağını (theme resource ID) döndürür.
+     * "Sistem Varsayılanı" seçeneğini doğru bir şekilde ele alır.
+     */
+    fun getThemeResId(context: Context): Int {
+        val selectedColorThemeIndex = SharedPreferencesManager.getAppColorTheme(context)
+        val savedThemeMode = SharedPreferencesManager.getTheme(context)
+
+        // Cihazın gerçek gece modu durumunu kontrol et
+        val isNightMode = when (savedThemeMode) {
+            AppCompatDelegate.MODE_NIGHT_YES -> true
+            AppCompatDelegate.MODE_NIGHT_NO -> false
+            else -> { // MODE_NIGHT_FOLLOW_SYSTEM durumu
+                val currentNightMode = context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+                currentNightMode == Configuration.UI_MODE_NIGHT_YES
+            }
+        }
+
+        // Renk teması ve gece modu durumuna göre uygun stili seç
+        return when (selectedColorThemeIndex) {
+            0 -> if (isNightMode) R.style.Theme_Pdf_SereneBlue_Dark else R.style.Theme_Pdf_SereneBlue_Light
+            1 -> if (isNightMode) R.style.Theme_Pdf_Red_Dark else R.style.Theme_Pdf_Red_Light
+            2 -> if (isNightMode) R.style.Theme_Pdf_Green_Dark else R.style.Theme_Pdf_Green_Light
+            3 -> if (isNightMode) R.style.Theme_Pdf_Purple_Dark else R.style.Theme_Pdf_Purple_Light
+            4 -> if (isNightMode) R.style.Theme_Pdf_Orange_Dark else R.style.Theme_Pdf_Orange_Light
+            5 -> if (isNightMode) R.style.Theme_Pdf_DeepPurple_Dark else R.style.Theme_Pdf_DeepPurple_Light
+            6 -> if (isNightMode) R.style.Theme_Pdf_Indigo_Dark else R.style.Theme_Pdf_Indigo_Light
+            7 -> if (isNightMode) R.style.Theme_Pdf_Cyan_Dark else R.style.Theme_Pdf_Cyan_Light
+            8 -> if (isNightMode) R.style.Theme_Pdf_Pink_Dark else R.style.Theme_Pdf_Pink_Light
+            9 -> if (isNightMode) R.style.Theme_Pdf_Brown_Dark else R.style.Theme_Pdf_Brown_Light
+            else -> if (isNightMode) R.style.Theme_Pdf_SereneBlue_Dark else R.style.Theme_Pdf_SereneBlue_Light
+        }
+    }
 
     fun applyAppColorTheme(activity: Activity, themeIndex: Int) {
         SharedPreferencesManager.saveAppColorTheme(activity, themeIndex)
