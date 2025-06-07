@@ -24,21 +24,24 @@ class SplashActivity : AppCompatActivity() {
         startTypingAnimation()
 
         handler.postDelayed({
-            val intent: Intent
-            // Kullanıcının daha önce bir dil seçip seçmediğini kontrol et
+            // Uygulama ilk kez mi açılıyor kontrolü (dil seçimi yapılmamışsa)
             if (!SharedPreferencesManager.isLanguageSelected(this)) {
-                // Dil seçilmemişse, dil seçim ekranına yönlendir
-                intent = Intent(this, LanguageSelectionActivity::class.java)
-            } else {
-                // Dil seçilmişse, kullanıcı adının olup olmadığını kontrol et
-                if (SharedPreferencesManager.getUserName(this) == null) {
-                    // Kullanıcı adı yoksa, isim giriş ekranına yönlendir
-                    intent = Intent(this, NameEntryActivity::class.java)
-                } else {
-                    // Hem dil seçilmiş hem de kullanıcı adı varsa, ana ekrana yönlendir
-                    intent = Intent(this, MainActivity::class.java)
-                }
+                // Cihazın sistem dilini al
+                val systemLanguage = java.util.Locale.getDefault().language
+                // Alınan sistem dilini kaydet ve dilin seçildiğini işaretle
+                LocaleHelper.persist(this, systemLanguage)
             }
+
+            val intent: Intent
+            // Kullanıcı adı daha önce girilmiş mi diye kontrol et
+            if (SharedPreferencesManager.getUserName(this) == null) {
+                // Kullanıcı adı yoksa, isim giriş ekranına yönlendir
+                intent = Intent(this, NameEntryActivity::class.java)
+            } else {
+                // Kullanıcı adı varsa, ana ekrana yönlendir
+                intent = Intent(this, MainActivity::class.java)
+            }
+
             // Yeni aktiviteyi başlat ve splash ekranını kapat (önceki aktiviteleri temizle)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
