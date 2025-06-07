@@ -69,6 +69,7 @@ class MainActivity : AppCompatActivity() {
         Log.d("ThemeDebug", "MainActivity - onCreate çağrıldı.")
         applyThemeAndColor()
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main) // Moved this line here
 
         // Durum çubuğunu gizleme
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -85,7 +86,6 @@ class MainActivity : AppCompatActivity() {
                     or View.SYSTEM_UI_FLAG_FULLSCREEN)
         }
 
-        setContentView(R.layout.activity_main)
 
         val toolbar: MaterialToolbar = findViewById(R.id.topToolbar)
         setSupportActionBar(toolbar)

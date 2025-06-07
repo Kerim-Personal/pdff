@@ -40,6 +40,7 @@ class LanguageSelectionActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         applyThemeAndColor()
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_language_selection) // Moved to here
 
         // Durum çubuğunu gizleme
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -55,8 +56,6 @@ class LanguageSelectionActivity : AppCompatActivity() {
                     or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                     or View.SYSTEM_UI_FLAG_FULLSCREEN)
         }
-
-        setContentView(R.layout.activity_language_selection)
 
         val layoutTurkish: LinearLayout = findViewById(R.id.layoutTurkish)
         val layoutEnglish: LinearLayout = findViewById(R.id.layoutEnglish)

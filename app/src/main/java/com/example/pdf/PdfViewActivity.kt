@@ -40,7 +40,10 @@ import java.io.IOException
 import java.io.FileNotFoundException
 import androidx.appcompat.app.AppCompatDelegate
 import android.util.TypedValue
-
+import android.view.WindowInsets
+import android.view.WindowInsetsController
+import android.os.Build
+import com.google.android.material.card.MaterialCardView // Import MaterialCardView
 
 class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorListener, OnPageErrorListener {
 
@@ -56,7 +59,7 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
     private lateinit var drawingView: DrawingView
     private lateinit var fabToggleDrawing: FloatingActionButton
     private lateinit var fabEraser: FloatingActionButton
-    private lateinit var drawingOptionsPanel: LinearLayout
+    private lateinit var drawingOptionsPanel: MaterialCardView // Changed from LinearLayout to MaterialCardView
     private lateinit var colorOptions: LinearLayout
     private lateinit var sizeOptions: LinearLayout
     private lateinit var clearAllButtonContainer: LinearLayout
@@ -124,11 +127,26 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        applyThemeAndColor() // Temayı ayarlayan metod buraya taşındı.
+        applyThemeAndColor()
         super.onCreate(savedInstanceState)
         UIFeedbackHelper.init(this)
         window.setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE)
         setContentView(R.layout.activity_pdf_view)
+
+        // Durum çubuğunu gizleme
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            window.setDecorFitsSystemWindows(false)
+            window.insetsController?.let {
+                it.hide(WindowInsets.Type.statusBars() or WindowInsets.Type.navigationBars())
+                it.systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            }
+        } else {
+            @Suppress("DEPRECATION")
+            window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                    or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    or View.SYSTEM_UI_FLAG_FULLSCREEN)
+        }
 
         rootLayout = findViewById(R.id.root_layout_pdf_view)
         pdfToolbar = findViewById(R.id.pdfToolbar)
@@ -150,7 +168,7 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
         drawingView = findViewById(R.id.drawingView)
         fabToggleDrawing = findViewById(R.id.fab_toggle_drawing)
         fabEraser = findViewById(R.id.fab_eraser)
-        drawingOptionsPanel = findViewById(R.id.drawingOptionsPanel)
+        drawingOptionsPanel = findViewById(R.id.drawingControlsCard) // Corrected from LinearLayout to MaterialCardView
         colorOptions = findViewById(R.id.colorOptions)
         sizeOptions = findViewById(R.id.sizeOptions)
         clearAllButtonContainer = findViewById(R.id.clearAllButtonContainer)

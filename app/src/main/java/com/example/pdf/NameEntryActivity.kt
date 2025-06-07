@@ -42,6 +42,7 @@ class NameEntryActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         applyThemeAndColor()
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_name_entry) // Moved to here
 
         // Durum çubuğunu gizleme
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -57,8 +58,6 @@ class NameEntryActivity : AppCompatActivity() {
                     or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                     or View.SYSTEM_UI_FLAG_FULLSCREEN)
         }
-
-        setContentView(R.layout.activity_name_entry)
 
         val editTextName: TextInputEditText = findViewById(R.id.editTextName)
         val buttonContinue: Button = findViewById(R.id.buttonContinue)
