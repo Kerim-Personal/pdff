@@ -61,7 +61,12 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
     private lateinit var drawingView: DrawingView
     private lateinit var fabToggleDrawing: FloatingActionButton
     private lateinit var fabEraser: FloatingActionButton
-    private lateinit var drawingOptionsPanel: MaterialCardView
+
+    // --- DÜZELTME BAŞLANGICI ---
+    // Değişkenler doğru layout elemanlarına işaret edecek şekilde güncellendi.
+    private lateinit var drawingOptionsPanel: LinearLayout // Eskiden MaterialCardView idi.
+    // --- DÜZELTME BİTİŞİ ---
+
     private lateinit var colorOptions: LinearLayout
     private lateinit var sizeOptions: LinearLayout
     private lateinit var clearAllButtonContainer: LinearLayout
@@ -168,7 +173,12 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
         drawingView = findViewById(R.id.drawingView)
         fabToggleDrawing = findViewById(R.id.fab_toggle_drawing)
         fabEraser = findViewById(R.id.fab_eraser)
-        drawingOptionsPanel = findViewById(R.id.drawingControlsCard)
+
+        // --- DÜZELTME BAŞLANGICI ---
+        // Değişkenler doğru layout ID'lerine atandı.
+        drawingOptionsPanel = findViewById(R.id.drawingOptionsPanel)
+        // --- DÜZELTME BİTİŞİ ---
+
         colorOptions = findViewById(R.id.colorOptions)
         sizeOptions = findViewById(R.id.sizeOptions)
         clearAllButtonContainer = findViewById(R.id.clearAllButtonContainer)
@@ -431,23 +441,22 @@ class PdfViewActivity : AppCompatActivity(), OnLoadCompleteListener, OnErrorList
     }
 
     private fun setDrawingButtonState(active: Boolean) {
-        val typedValue = TypedValue()
-
-        theme.resolveAttribute(R.attr.colorPrimaryDynamic, typedValue, true)
-        val activeColor = ColorStateList.valueOf(typedValue.data)
-
-        theme.resolveAttribute(R.attr.colorAccentDynamic, typedValue, true)
-        val inactiveColor = ColorStateList.valueOf(typedValue.data)
+        // Renkleri doğrudan tanımlıyoruz: Aktif için Siyah, Pasif için Beyaz.
+        val activeColor = ColorStateList.valueOf(Color.BLACK)
+        val inactiveColor = ColorStateList.valueOf(Color.WHITE)
 
         if (active) {
             if (drawingView.drawingMode == DrawingView.DrawingMode.PEN) {
+                // Kalem modu aktif: Kalem ikonu siyah, silgi ikonu beyaz.
                 fabToggleDrawing.imageTintList = activeColor
                 fabEraser.imageTintList = inactiveColor
             } else if (drawingView.drawingMode == DrawingView.DrawingMode.ERASER) {
+                // Silgi modu aktif: Kalem ikonu beyaz, silgi ikonu siyah.
                 fabToggleDrawing.imageTintList = inactiveColor
                 fabEraser.imageTintList = activeColor
             }
         } else {
+            // Hiçbir mod aktif değil: Her iki ikon da beyaz.
             fabToggleDrawing.imageTintList = inactiveColor
             fabEraser.imageTintList = inactiveColor
         }

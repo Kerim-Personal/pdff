@@ -102,7 +102,7 @@ class SettingsActivity : AppCompatActivity() {
         )
 
         val currentTheme = SharedPreferencesManager.getTheme(this)
-        var checkedItem = when (currentTheme) {
+        val checkedItem = when (currentTheme) {
             AppCompatDelegate.MODE_NIGHT_NO -> 0
             AppCompatDelegate.MODE_NIGHT_YES -> 1
             else -> 2
@@ -110,24 +110,21 @@ class SettingsActivity : AppCompatActivity() {
 
         AlertDialog.Builder(this)
             .setTitle(getString(R.string.theme_title))
-            .setSingleChoiceItems(themes, checkedItem) { _, which ->
-                checkedItem = which
-            }
-            .setPositiveButton(getString(android.R.string.ok)) { dialog, _ ->
-                val selectedTheme = when (checkedItem) {
+            .setSingleChoiceItems(themes, checkedItem) { dialog, which ->
+                val selectedTheme = when (which) {
                     0 -> AppCompatDelegate.MODE_NIGHT_NO
                     1 -> AppCompatDelegate.MODE_NIGHT_YES
                     else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
                 }
-                SharedPreferencesManager.saveTheme(this, selectedTheme)
-                AppCompatDelegate.setDefaultNightMode(selectedTheme)
-                recreate()
-                setResult(Activity.RESULT_OK)
-                Log.d("ThemeDebug", "SettingsActivity - Tema değişti: $selectedTheme, RESULT_OK ayarlandı.")
-                dialog.dismiss()
-            }
-            .setNegativeButton(getString(android.R.string.cancel)) { dialog, _ ->
-                dialog.dismiss()
+
+                // Sadece mevcut temadan farklı bir seçim yapıldıysa işlem yap
+                if (selectedTheme != currentTheme) {
+                    SharedPreferencesManager.saveTheme(this, selectedTheme)
+                    AppCompatDelegate.setDefaultNightMode(selectedTheme)
+                    setResult(Activity.RESULT_OK) // Değişikliği MainActivity'ye bildir
+                    recreate() // Değişikliğin hemen yansıması için Activity'yi yeniden oluştur
+                }
+                dialog.dismiss() // Seçim yapıldıktan sonra dialog'u kapat
             }
             .create()
             .show()
@@ -143,23 +140,18 @@ class SettingsActivity : AppCompatActivity() {
 
         AlertDialog.Builder(this)
             .setTitle(getString(R.string.app_color_title))
-            .setSingleChoiceItems(themeColorNames, checkedItem) { _, which ->
-                checkedItem = which
-            }
-            .setPositiveButton(getString(android.R.string.ok)) { dialog, _ ->
-                if (checkedItem != currentAppColorThemeIndex) {
-                    ThemeManager.applyAppColorTheme(this, checkedItem)
+            .setSingleChoiceItems(themeColorNames, checkedItem) { dialog, which ->
+                // Sadece mevcut renk temasından farklı bir seçim yapıldıysa işlem yap
+                if (which != currentAppColorThemeIndex) {
+                    ThemeManager.applyAppColorTheme(this, which) // Bu metod zaten recreate() çağırıyor
                     setResult(Activity.RESULT_OK)
-                    Log.d("ThemeDebug", "SettingsActivity - Renk teması değişti: $checkedItem, RESULT_OK ayarlandı.")
                 }
-                dialog.dismiss()
-            }
-            .setNegativeButton(getString(android.R.string.cancel)) { dialog, _ ->
-                dialog.dismiss()
+                dialog.dismiss() // Seçim yapıldıktan sonra dialog'u kapat
             }
             .create()
             .show()
     }
+
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
